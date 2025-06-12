@@ -4,6 +4,7 @@ import type React from "react"
 
 import { ProtectedRoute } from "@/components/protected-route"
 import { Sidebar } from "@/components/layout/sidebar"
+import { TopNav } from "@/components/layout/top-nav"
 
 interface DashboardLayoutProps {
   children: React.ReactNode
@@ -13,11 +14,14 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children, requiredRole }: DashboardLayoutProps) {
   return (
     <ProtectedRoute requiredRole={requiredRole}>
-      <div className="flex h-screen bg-background">
+      <div className="flex h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
         <Sidebar />
-        <main className="flex-1 overflow-auto lg:ml-0">
-          <div className="p-6 lg:p-8 pt-16 lg:pt-8">{children}</div>
-        </main>
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <TopNav />
+          <main className="flex-1 overflow-auto">
+            <div className="p-6 lg:p-8">{children}</div>
+          </main>
+        </div>
       </div>
     </ProtectedRoute>
   )
