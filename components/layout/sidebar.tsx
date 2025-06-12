@@ -72,7 +72,7 @@ export function Sidebar() {
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="flex items-center justify-center h-16 px-4 border-b">
-            <h1 className="text-xl font-bold">ProjectHub</h1>
+            <h1 className="text-xl font-bold">Rules</h1>
           </div>
 
           {/* Navigation */}
