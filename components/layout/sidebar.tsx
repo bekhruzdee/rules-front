@@ -41,7 +41,7 @@ export function Sidebar() {
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm lg:hidden"
+          className="fixed bg-card inset-0 z-40 bg-black/20 backdrop-blur-sm lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -59,7 +59,7 @@ export function Sidebar() {
       {/* Sidebar */}
       <div
         className={cn(
-          "fixed inset-y-0 left-0 z-50 bg-gradient-to-b from-slate-50 to-white border-r border-slate-200/60 transform transition-all duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 shadow-xl lg:shadow-none",
+          "fixed bg-card inset-y-0 left-0 z-50  from-slate-50 to-white border-r border-slate-200/60 transform transition-all duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 shadow-xl lg:shadow-none",
           sidebarOpen ? "translate-x-0" : "-translate-x-full",
           collapsed ? "w-16" : "w-64",
         )}
@@ -96,7 +96,7 @@ export function Sidebar() {
                   key={item.name}
                   href={item.href}
                   className={cn(
-                    "flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 group relative",
+                    "flex  items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 group relative",
                     isActive
                       ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg shadow-blue-500/25"
                       : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/80",
@@ -105,12 +105,12 @@ export function Sidebar() {
                   onClick={() => setSidebarOpen(false)}
                   title={collapsed ? item.name : undefined}
                 >
-                  <item.icon className={cn("h-5 w-5 flex-shrink-0", !collapsed && "mr-3")} />
-                  {!collapsed && <span className="truncate">{item.name}</span>}
+                  <item.icon className={cn("h-5 w-5 flex-shrink-0 text-card-foreground", !collapsed && "mr-3")} />
+                  {!collapsed && <span className="truncate text-card-foreground">{item.name}</span>}
 
                   {/* Tooltip for collapsed state */}
                   {collapsed && (
-                    <div className="absolute left-full ml-2 px-2 py-1 bg-slate-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                    <div className="absolute  left-full ml-2 px-2 py-1 bg-slate-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
                       {item.name}
                     </div>
                   )}

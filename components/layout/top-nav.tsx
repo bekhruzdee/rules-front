@@ -18,7 +18,7 @@ export function TopNav() {
   const { user, logout } = useAuth()
 
   return (
-    <div className="sticky top-0 z-40 w-full border-b border-slate-200/60 bg-white/80 backdrop-blur-md">
+    <div className="sticky bg-card top-0 z-40 w-full border-b border-slate-200/60 backdrop-blur-md">
       <div className="flex h-16 items-center justify-end px-6">
         <div className="flex items-center space-x-4">
           {/* Theme Toggle */}
