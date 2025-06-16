@@ -1,102 +1,107 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState, useEffect } from "react"
-import { useAuth } from "@/contexts/auth-context"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Loader2, Eye, EyeOff } from "lucide-react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
+import type React from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/auth-context";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Loader2, Eye, EyeOff } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
-  })
-  const [showPassword, setShowPassword] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [errors, setErrors] = useState<{ username?: string; password?: string }>({})
-  const { register, isAuthenticated, loading: authLoading } = useAuth()
-  const router = useRouter()
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<{
+    username?: string;
+    password?: string;
+  }>({});
+  const { register, isAuthenticated, loading: authLoading } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     if (!authLoading && isAuthenticated) {
-      router.replace("/dashboard")
+      router.replace("/dashboard");
     }
-  }, [isAuthenticated, authLoading, router])
+  }, [isAuthenticated, authLoading, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
-    }))
+    }));
 
-    // Clear error when user starts typing
     if (errors[name as keyof typeof errors]) {
       setErrors((prev) => ({
         ...prev,
         [name]: undefined,
-      }))
+      }));
     }
-  }
+  };
 
   const validateForm = () => {
-    const newErrors: { username?: string; password?: string } = {}
+    const newErrors: { username?: string; password?: string } = {};
 
     if (!formData.username.trim()) {
-      newErrors.username = "Username is required"
+      newErrors.username = "Username is required";
     } else if (formData.username.length < 3) {
-      newErrors.username = "Username must be at least 3 characters"
+      newErrors.username = "Username must be at least 3 characters";
     }
 
     if (!formData.password) {
-      newErrors.password = "Password is required"
+      newErrors.password = "Password is required";
     } else if (formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters"
+      newErrors.password = "Password must be at least 6 characters";
     }
 
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!validateForm()) {
-      return
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
 
     try {
-      // Send only username and password to match backend expectations
       await register({
         username: formData.username,
         password: formData.password,
-      })
+      });
     } catch (error) {
-      // Error is handled in the auth context
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  // Show loading while checking authentication
   if (authLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
-    )
+    );
   }
 
-  // Don't render register form if already authenticated
   if (isAuthenticated) {
-    return null
+    return null;
   }
 
   return (
@@ -122,10 +127,14 @@ export default function RegisterPage() {
                 placeholder="Enter your username"
                 value={formData.username}
                 onChange={handleChange}
-                className={errors.username ? "border-red-500 focus:border-red-500" : ""}
+                className={
+                  errors.username ? "border-red-500 focus:border-red-500" : ""
+                }
                 required
               />
-              {errors.username && <p className="text-sm text-red-500 mt-1">{errors.username}</p>}
+              {errors.username && (
+                <p className="text-sm text-red-500 mt-1">{errors.username}</p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -140,7 +149,9 @@ export default function RegisterPage() {
                   placeholder="Enter your password"
                   value={formData.password}
                   onChange={handleChange}
-                  className={errors.password ? "border-red-500 focus:border-red-500" : ""}
+                  className={
+                    errors.password ? "border-red-500 focus:border-red-500" : ""
+                  }
                   required
                 />
                 <Button
@@ -150,10 +161,16 @@ export default function RegisterPage() {
                   className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                   onClick={() => setShowPassword(!showPassword)}
                 >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
                 </Button>
               </div>
-              {errors.password && <p className="text-sm text-red-500 mt-1">{errors.password}</p>}
+              {errors.password && (
+                <p className="text-sm text-red-500 mt-1">{errors.password}</p>
+              )}
             </div>
           </CardContent>
 
@@ -169,7 +186,10 @@ export default function RegisterPage() {
 
             <p className="text-sm text-center text-muted-foreground">
               Already have an account?{" "}
-              <Link href="/login" className="text-blue-600 hover:text-blue-700 hover:underline font-medium">
+              <Link
+                href="/login"
+                className="text-blue-600 hover:text-blue-700 hover:underline font-medium"
+              >
                 Sign in
               </Link>
             </p>
@@ -177,5 +197,5 @@ export default function RegisterPage() {
         </form>
       </Card>
     </div>
-  )
+  );
 }

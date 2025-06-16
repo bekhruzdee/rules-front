@@ -1,56 +1,74 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { DashboardLayout } from "@/components/layout/dashboard-layout"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { api } from "@/lib/api/auth"
-import { Search, MessageSquare, Calendar, Filter, FolderOpen, CheckSquare } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+import { useEffect, useState } from "react";
+import { DashboardLayout } from "@/components/layout/dashboard-layout";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { api } from "@/lib/api";
+import {
+  Search,
+  MessageSquare,
+  Calendar,
+  Filter,
+  FolderOpen,
+  CheckSquare,
+} from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface Comment {
-  id: number
-  content: string
-  createdAt: string
-  updatedAt: string
+  id: number;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
   user: {
-    id: number
-    username: string
-    firstName?: string
-    lastName?: string
-    avatar?: string
-  }
+    id: number;
+    username: string;
+    firstName?: string;
+    lastName?: string;
+    avatar?: string;
+  };
   task?: {
-    id: number
-    title: string
-  }
+    id: number;
+    title: string;
+  };
   project?: {
-    id: number
-    name: string
-  }
+    id: number;
+    name: string;
+  };
 }
 
 export default function CommentsPage() {
-  const [comments, setComments] = useState<Comment[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [filterType, setFilterType] = useState<string>("all")
-  const { toast } = useToast()
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterType, setFilterType] = useState<string>("all");
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        // Check if we're in demo mode first
-        const token = localStorage.getItem("token")
+        const token = localStorage.getItem("token");
         if (token === "demo-token") {
-          // Use mock data immediately for demo mode
           const mockComments: Comment[] = [
             {
               id: 1,
-              content: "Great progress on this task! The design looks really clean and modern.",
+              content:
+                "Great progress on this task! The design looks really clean and modern.",
               createdAt: new Date().toISOString(),
               updatedAt: new Date().toISOString(),
               user: {
@@ -66,7 +84,8 @@ export default function CommentsPage() {
             },
             {
               id: 2,
-              content: "We need to discuss the authentication flow before proceeding with implementation.",
+              content:
+                "We need to discuss the authentication flow before proceeding with implementation.",
               createdAt: new Date(Date.now() - 86400000).toISOString(),
               updatedAt: new Date(Date.now() - 86400000).toISOString(),
               user: {
@@ -96,22 +115,22 @@ export default function CommentsPage() {
                 title: "Write Unit Tests",
               },
             },
-          ]
-          setComments(mockComments)
-          setLoading(false)
-          return
+          ];
+          setComments(mockComments);
+          setLoading(false);
+          return;
         }
 
-        // Try to fetch from backend only if not in demo mode
-        const response = await api.get("/comments")
-        setComments(response.data)
+        const response = await api.get("/comments");
+        setComments(response.data);
       } catch (error) {
-        console.error("Failed to fetch comments:", error)
-        // Fallback to mock data for development
+        console.error("Failed to fetch comments:", error);
+
         const mockComments: Comment[] = [
           {
             id: 1,
-            content: "Great progress on this task! The design looks really clean and modern.",
+            content:
+              "Great progress on this task! The design looks really clean and modern.",
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             user: {
@@ -127,7 +146,8 @@ export default function CommentsPage() {
           },
           {
             id: 2,
-            content: "We need to discuss the authentication flow before proceeding with implementation.",
+            content:
+              "We need to discuss the authentication flow before proceeding with implementation.",
             createdAt: new Date(Date.now() - 86400000).toISOString(),
             updatedAt: new Date(Date.now() - 86400000).toISOString(),
             user: {
@@ -157,33 +177,35 @@ export default function CommentsPage() {
               title: "Write Unit Tests",
             },
           },
-        ]
-        setComments(mockComments)
+        ];
+        setComments(mockComments);
         toast({
           title: "Demo Mode",
           description: "Using mock data - connect to your backend API",
           variant: "default",
-        })
+        });
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchComments()
-  }, [toast])
+    fetchComments();
+  }, [toast]);
 
   const filteredComments = comments.filter((comment) => {
     const matchesSearch =
       comment.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
       comment.user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
       comment.task?.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      comment.project?.name.toLowerCase().includes(searchTerm.toLowerCase())
+      comment.project?.name.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesFilter =
-      filterType === "all" || (filterType === "tasks" && comment.task) || (filterType === "projects" && comment.project)
+      filterType === "all" ||
+      (filterType === "tasks" && comment.task) ||
+      (filterType === "projects" && comment.project);
 
-    return matchesSearch && matchesFilter
-  })
+    return matchesSearch && matchesFilter;
+  });
 
   if (loading) {
     return (
@@ -215,7 +237,7 @@ export default function CommentsPage() {
           </div>
         </div>
       </DashboardLayout>
-    )
+    );
   }
 
   return (
@@ -224,7 +246,9 @@ export default function CommentsPage() {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Comments</h1>
-            <p className="text-muted-foreground">View all comments across projects and tasks</p>
+            <p className="text-muted-foreground">
+              View all comments across projects and tasks
+            </p>
           </div>
         </div>
 
@@ -253,12 +277,17 @@ export default function CommentsPage() {
 
         <div className="space-y-4">
           {filteredComments.map((comment) => (
-            <Card key={comment.id} className="hover:shadow-md transition-shadow">
+            <Card
+              key={comment.id}
+              className="hover:shadow-md transition-shadow"
+            >
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex items-center space-x-4">
                     <Avatar className="h-10 w-10">
-                      <AvatarImage src={comment.user.avatar || "/placeholder.svg"} />
+                      <AvatarImage
+                        src={comment.user.avatar || "/placeholder.svg"}
+                      />
                       <AvatarFallback>
                         {comment.user.firstName?.[0]}
                         {comment.user.lastName?.[0]} ||
@@ -267,11 +296,14 @@ export default function CommentsPage() {
                     </Avatar>
                     <div>
                       <CardTitle className="text-lg">
-                        {comment.user.firstName} {comment.user.lastName} || {comment.user.username}
+                        {comment.user.firstName} {comment.user.lastName} ||{" "}
+                        {comment.user.username}
                       </CardTitle>
                       <CardDescription className="flex items-center space-x-2">
                         <Calendar className="h-3 w-3" />
-                        <span>{new Date(comment.createdAt).toLocaleDateString()}</span>
+                        <span>
+                          {new Date(comment.createdAt).toLocaleDateString()}
+                        </span>
                         {comment.createdAt !== comment.updatedAt && (
                           <>
                             <span>•</span>
@@ -284,13 +316,19 @@ export default function CommentsPage() {
 
                   <div className="flex items-center space-x-2">
                     {comment.task && (
-                      <Badge variant="outline" className="flex items-center space-x-1">
+                      <Badge
+                        variant="outline"
+                        className="flex items-center space-x-1"
+                      >
                         <CheckSquare className="h-3 w-3" />
                         <span>Task</span>
                       </Badge>
                     )}
                     {comment.project && (
-                      <Badge variant="outline" className="flex items-center space-x-1">
+                      <Badge
+                        variant="outline"
+                        className="flex items-center space-x-1"
+                      >
                         <FolderOpen className="h-3 w-3" />
                         <span>Project</span>
                       </Badge>
@@ -330,7 +368,9 @@ export default function CommentsPage() {
           <div className="text-center py-12">
             <MessageSquare className="mx-auto h-12 w-12 text-muted-foreground" />
             <h3 className="mt-2 text-sm font-semibold text-foreground">
-              {searchTerm || filterType !== "all" ? "No comments found" : "No comments"}
+              {searchTerm || filterType !== "all"
+                ? "No comments found"
+                : "No comments"}
             </h3>
             <p className="mt-1 text-sm text-muted-foreground">
               {searchTerm || filterType !== "all"
@@ -341,5 +381,5 @@ export default function CommentsPage() {
         )}
       </div>
     </DashboardLayout>
-  )
+  );
 }

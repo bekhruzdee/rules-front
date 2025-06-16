@@ -1,17 +1,23 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { useAuth } from "@/contexts/auth-context"
-import { DashboardLayout } from "@/components/layout/dashboard-layout"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { Separator } from "@/components/ui/separator"
-import { LoadingSpinner } from "@/components/ui/loading-spinner"
+import { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/auth-context";
+import { DashboardLayout } from "@/components/layout/dashboard-layout";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Separator } from "@/components/ui/separator";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import {
   Edit3,
   Save,
@@ -25,17 +31,17 @@ import {
   Award,
   TrendingUp,
   Shield,
-} from "lucide-react"
+} from "lucide-react";
 
 export default function ProfilePage() {
-  const { user } = useAuth()
-  const [isEditing, setIsEditing] = useState(false)
-  const [loading, setLoading] = useState(true)
+  const { user } = useAuth();
+  const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [editedUser, setEditedUser] = useState({
     firstName: "",
     lastName: "",
     username: "",
-  })
+  });
 
   useEffect(() => {
     if (user) {
@@ -43,16 +49,15 @@ export default function ProfilePage() {
         firstName: user.firstName || "",
         lastName: user.lastName || "",
         username: user.username || "",
-      })
-      setLoading(false)
+      });
+      setLoading(false);
     }
-  }, [user])
+  }, [user]);
 
   const handleSave = () => {
-    // Here you would typically make an API call to update the user
-    console.log("Saving user data:", editedUser)
-    setIsEditing(false)
-  }
+    console.log("Saving user data:", editedUser);
+    setIsEditing(false);
+  };
 
   const handleCancel = () => {
     if (user) {
@@ -60,12 +65,11 @@ export default function ProfilePage() {
         firstName: user.firstName || "",
         lastName: user.lastName || "",
         username: user.username || "",
-      })
+      });
     }
-    setIsEditing(false)
-  }
+    setIsEditing(false);
+  };
 
-  // Mock data for demonstration
   const stats = {
     tasksCompleted: 24,
     totalTasks: 30,
@@ -73,14 +77,26 @@ export default function ProfilePage() {
     totalProjects: 8,
     commentsPosted: 45,
     completionRate: 80,
-  }
+  };
 
   const recentActivity = [
-    { action: "Completed task", item: "Update user interface", time: "2 hours ago" },
-    { action: "Created project", item: "Mobile App Redesign", time: "1 day ago" },
-    { action: "Posted comment", item: "Design Review Meeting", time: "2 days ago" },
+    {
+      action: "Completed task",
+      item: "Update user interface",
+      time: "2 hours ago",
+    },
+    {
+      action: "Created project",
+      item: "Mobile App Redesign",
+      time: "1 day ago",
+    },
+    {
+      action: "Posted comment",
+      item: "Design Review Meeting",
+      time: "2 days ago",
+    },
     { action: "Updated task", item: "API Integration", time: "3 days ago" },
-  ]
+  ];
 
   if (loading) {
     return (
@@ -89,7 +105,7 @@ export default function ProfilePage() {
           <LoadingSpinner size="lg" />
         </div>
       </DashboardLayout>
-    )
+    );
   }
 
   return (
@@ -101,7 +117,9 @@ export default function ProfilePage() {
             <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               User Profile
             </h1>
-            <p className="text-muted-foreground">Manage your account settings and view your activity</p>
+            <p className="text-muted-foreground">
+              Manage your account settings and view your activity
+            </p>
           </div>
         </div>
 
@@ -131,7 +149,12 @@ export default function ProfilePage() {
                   <div>
                     <CardTitle className="text-2xl flex items-center gap-2">
                       {user?.username}
-                      <Badge variant={user?.role === "ADMIN" ? "default" : "secondary"} className="ml-2">
+                      <Badge
+                        variant={
+                          user?.role === "ADMIN" ? "default" : "secondary"
+                        }
+                        className="ml-2"
+                      >
                         <Shield className="h-3 w-3 mr-1" />
                         {user?.role}
                       </Badge>
@@ -163,7 +186,12 @@ export default function ProfilePage() {
                         <Input
                           id="firstName"
                           value={editedUser.firstName}
-                          onChange={(e) => setEditedUser({ ...editedUser, firstName: e.target.value })}
+                          onChange={(e) =>
+                            setEditedUser({
+                              ...editedUser,
+                              firstName: e.target.value,
+                            })
+                          }
                           placeholder="Enter first name"
                         />
                       </div>
@@ -172,7 +200,12 @@ export default function ProfilePage() {
                         <Input
                           id="lastName"
                           value={editedUser.lastName}
-                          onChange={(e) => setEditedUser({ ...editedUser, lastName: e.target.value })}
+                          onChange={(e) =>
+                            setEditedUser({
+                              ...editedUser,
+                              lastName: e.target.value,
+                            })
+                          }
                           placeholder="Enter last name"
                         />
                       </div>
@@ -182,7 +215,12 @@ export default function ProfilePage() {
                       <Input
                         id="username"
                         value={editedUser.username}
-                        onChange={(e) => setEditedUser({ ...editedUser, username: e.target.value })}
+                        onChange={(e) =>
+                          setEditedUser({
+                            ...editedUser,
+                            username: e.target.value,
+                          })
+                        }
                         placeholder="Enter username"
                       />
                     </div>
@@ -195,7 +233,11 @@ export default function ProfilePage() {
                         <Save className="h-4 w-4 mr-2" />
                         Save Changes
                       </Button>
-                      <Button onClick={handleCancel} variant="outline" size="sm">
+                      <Button
+                        onClick={handleCancel}
+                        variant="outline"
+                        size="sm"
+                      >
                         <X className="h-4 w-4 mr-2" />
                         Cancel
                       </Button>
@@ -244,18 +286,28 @@ export default function ProfilePage() {
               <Separator />
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Completed Tasks</span>
+                  <span className="text-sm text-muted-foreground">
+                    Completed Tasks
+                  </span>
                   <span className="font-medium text-green-600">
                     {stats.tasksCompleted}/{stats.totalTasks}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Active Projects</span>
-                  <span className="font-medium text-blue-600">{stats.activeProjects}</span>
+                  <span className="text-sm text-muted-foreground">
+                    Active Projects
+                  </span>
+                  <span className="font-medium text-blue-600">
+                    {stats.activeProjects}
+                  </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Comments</span>
-                  <span className="font-medium text-purple-600">{stats.commentsPosted}</span>
+                  <span className="text-sm text-muted-foreground">
+                    Comments
+                  </span>
+                  <span className="font-medium text-purple-600">
+                    {stats.commentsPosted}
+                  </span>
                 </div>
               </div>
             </CardContent>
@@ -270,8 +322,12 @@ export default function ProfilePage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-green-600">{stats.tasksCompleted}</div>
-              <p className="text-xs text-muted-foreground">Completed this month</p>
+              <div className="text-3xl font-bold text-green-600">
+                {stats.tasksCompleted}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Completed this month
+              </p>
             </CardContent>
           </Card>
 
@@ -283,7 +339,9 @@ export default function ProfilePage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-blue-600">{stats.totalProjects}</div>
+              <div className="text-3xl font-bold text-blue-600">
+                {stats.totalProjects}
+              </div>
               <p className="text-xs text-muted-foreground">Total projects</p>
             </CardContent>
           </Card>
@@ -296,7 +354,9 @@ export default function ProfilePage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-purple-600">{stats.commentsPosted}</div>
+              <div className="text-3xl font-bold text-purple-600">
+                {stats.commentsPosted}
+              </div>
               <p className="text-xs text-muted-foreground">This month</p>
             </CardContent>
           </Card>
@@ -320,9 +380,13 @@ export default function ProfilePage() {
                     <div className="flex-1">
                       <p className="text-sm font-medium">
                         <span className="text-blue-600">{activity.action}</span>{" "}
-                        <span className="text-muted-foreground">{activity.item}</span>
+                        <span className="text-muted-foreground">
+                          {activity.item}
+                        </span>
                       </p>
-                      <p className="text-xs text-muted-foreground">{activity.time}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {activity.time}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -340,7 +404,9 @@ export default function ProfilePage() {
             </CardHeader>
             <CardContent className="text-center">
               <div className="text-4xl mb-2">🏆</div>
-              <p className="font-medium text-yellow-800 dark:text-yellow-200">Top Performer</p>
+              <p className="font-medium text-yellow-800 dark:text-yellow-200">
+                Top Performer
+              </p>
               <p className="text-xs text-yellow-600 dark:text-yellow-400 mt-1">
                 {stats.completionRate}% completion rate
               </p>
@@ -349,5 +415,5 @@ export default function ProfilePage() {
         </div>
       </div>
     </DashboardLayout>
-  )
+  );
 }

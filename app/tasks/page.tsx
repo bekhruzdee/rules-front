@@ -50,10 +50,8 @@ export default function TasksPage() {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        // Check if we're in demo mode first
         const token = localStorage.getItem("token");
         if (token === "demo-token") {
-          // Use mock data immediately for demo mode
           const mockTasks: Task[] = [
             {
               id: 1,
@@ -115,12 +113,11 @@ export default function TasksPage() {
           return;
         }
 
-        // Try to fetch from backend only if not in demo mode
         const response = await api.get("/tasks");
         setTasks(response.data);
       } catch (error) {
         console.error("Failed to fetch tasks:", error);
-        // Fallback to mock data
+
         const mockTasks: Task[] = [
           {
             id: 1,
@@ -201,7 +198,6 @@ export default function TasksPage() {
       | "IN_PROGRESS"
       | "DONE";
 
-    // Optimistically update the UI
     setTasks((prevTasks) =>
       prevTasks.map((task) =>
         task.id === taskId ? { ...task, status: newStatus } : task
@@ -215,7 +211,6 @@ export default function TasksPage() {
         description: "Task status has been updated successfully",
       });
     } catch (error) {
-      // Revert the change if the API call fails
       setTasks((prevTasks) =>
         prevTasks.map((task) =>
           task.id === taskId

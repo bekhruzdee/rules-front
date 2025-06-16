@@ -1,52 +1,70 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { DashboardLayout } from "@/components/layout/dashboard-layout"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { api } from "@/lib/api/auth"
-import { Plus, Search, AlertTriangle, DollarSign, Calendar, Filter } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+import { useEffect, useState } from "react";
+import { DashboardLayout } from "@/components/layout/dashboard-layout";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { api } from "@/lib/api";
+import {
+  Plus,
+  Search,
+  AlertTriangle,
+  DollarSign,
+  Calendar,
+  Filter,
+} from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface Violation {
-  id: number
-  type: string
-  description: string
-  points: number
-  salaryDeduction: number
-  createdAt: string
+  id: number;
+  type: string;
+  description: string;
+  points: number;
+  salaryDeduction: number;
+  createdAt: string;
   user: {
-    id: number
-    username: string
-    firstName?: string
-    lastName?: string
-    avatar?: string
-  }
+    id: number;
+    username: string;
+    firstName?: string;
+    lastName?: string;
+    avatar?: string;
+  };
 }
 
 export default function ViolationsPage() {
-  const [violations, setViolations] = useState<Violation[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [filterType, setFilterType] = useState<string>("all")
-  const { toast } = useToast()
+  const [violations, setViolations] = useState<Violation[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterType, setFilterType] = useState<string>("all");
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchViolations = async () => {
       try {
-        // Check if we're in demo mode first
-        const token = localStorage.getItem("token")
+        const token = localStorage.getItem("token");
         if (token === "demo-token") {
-          // Use mock data immediately for demo mode
           const mockViolations: Violation[] = [
             {
               id: 1,
               type: "Late Arrival",
-              description: "Employee arrived 30 minutes late without prior notification",
+              description:
+                "Employee arrived 30 minutes late without prior notification",
               points: 3,
               salaryDeduction: 50,
               createdAt: new Date().toISOString(),
@@ -60,7 +78,8 @@ export default function ViolationsPage() {
             {
               id: 2,
               type: "Missed Deadline",
-              description: "Failed to deliver project milestone on scheduled date",
+              description:
+                "Failed to deliver project milestone on scheduled date",
               points: 8,
               salaryDeduction: 200,
               createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
@@ -85,23 +104,23 @@ export default function ViolationsPage() {
                 lastName: "Doe",
               },
             },
-          ]
-          setViolations(mockViolations)
-          setLoading(false)
-          return
+          ];
+          setViolations(mockViolations);
+          setLoading(false);
+          return;
         }
 
-        // Try to fetch from backend only if not in demo mode
-        const response = await api.get("/violations")
-        setViolations(response.data)
+        const response = await api.get("/violations");
+        setViolations(response.data);
       } catch (error) {
-        console.error("Failed to fetch violations:", error)
-        // Fallback to mock data for development
+        console.error("Failed to fetch violations:", error);
+
         const mockViolations: Violation[] = [
           {
             id: 1,
             type: "Late Arrival",
-            description: "Employee arrived 30 minutes late without prior notification",
+            description:
+              "Employee arrived 30 minutes late without prior notification",
             points: 3,
             salaryDeduction: 50,
             createdAt: new Date().toISOString(),
@@ -115,7 +134,8 @@ export default function ViolationsPage() {
           {
             id: 2,
             type: "Missed Deadline",
-            description: "Failed to deliver project milestone on scheduled date",
+            description:
+              "Failed to deliver project milestone on scheduled date",
             points: 8,
             salaryDeduction: 200,
             createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
@@ -140,45 +160,49 @@ export default function ViolationsPage() {
               lastName: "Doe",
             },
           },
-        ]
-        setViolations(mockViolations)
+        ];
+        setViolations(mockViolations);
         toast({
           title: "Demo Mode",
           description: "Using mock data - connect to your backend API",
           variant: "default",
-        })
+        });
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchViolations()
-  }, [toast])
+    fetchViolations();
+  }, [toast]);
 
   const filteredViolations = violations.filter((violation) => {
     const matchesSearch =
       violation.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      violation.user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      violation.type.toLowerCase().includes(searchTerm.toLowerCase())
+      violation.user.username
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      violation.type.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesFilter = filterType === "all" || violation.type === filterType
+    const matchesFilter = filterType === "all" || violation.type === filterType;
 
-    return matchesSearch && matchesFilter
-  })
+    return matchesSearch && matchesFilter;
+  });
 
   const getSeverityColor = (points: number) => {
-    if (points >= 10) return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
-    if (points >= 5) return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
-    return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
-  }
+    if (points >= 10)
+      return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300";
+    if (points >= 5)
+      return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300";
+    return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
+  };
 
   const getSeverityLabel = (points: number) => {
-    if (points >= 10) return "High"
-    if (points >= 5) return "Medium"
-    return "Low"
-  }
+    if (points >= 10) return "High";
+    if (points >= 5) return "Medium";
+    return "Low";
+  };
 
-  const uniqueTypes = [...new Set(violations.map((v) => v.type))]
+  const uniqueTypes = [...new Set(violations.map((v) => v.type))];
 
   if (loading) {
     return (
@@ -217,7 +241,7 @@ export default function ViolationsPage() {
           </div>
         </div>
       </DashboardLayout>
-    )
+    );
   }
 
   return (
@@ -226,7 +250,9 @@ export default function ViolationsPage() {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Violations</h1>
-            <p className="text-muted-foreground">Track and manage disciplinary violations</p>
+            <p className="text-muted-foreground">
+              Track and manage disciplinary violations
+            </p>
           </div>
           <Button>
             <Plus className="mr-2 h-4 w-4" />
@@ -262,12 +288,17 @@ export default function ViolationsPage() {
 
         <div className="space-y-4">
           {filteredViolations.map((violation) => (
-            <Card key={violation.id} className="hover:shadow-md transition-shadow">
+            <Card
+              key={violation.id}
+              className="hover:shadow-md transition-shadow"
+            >
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
                     <Avatar className="h-10 w-10">
-                      <AvatarImage src={violation.user.avatar || "/placeholder.svg"} />
+                      <AvatarImage
+                        src={violation.user.avatar || "/placeholder.svg"}
+                      />
                       <AvatarFallback>
                         {violation.user.firstName?.[0]}
                         {violation.user.lastName?.[0]} ||
@@ -276,13 +307,16 @@ export default function ViolationsPage() {
                     </Avatar>
                     <div>
                       <CardTitle className="text-lg">
-                        {violation.user.firstName} {violation.user.lastName} || {violation.user.username}
+                        {violation.user.firstName} {violation.user.lastName} ||{" "}
+                        {violation.user.username}
                       </CardTitle>
                       <CardDescription className="flex items-center space-x-2">
                         <span>{violation.type}</span>
                         <span>•</span>
                         <Calendar className="h-3 w-3" />
-                        <span>{new Date(violation.createdAt).toLocaleDateString()}</span>
+                        <span>
+                          {new Date(violation.createdAt).toLocaleDateString()}
+                        </span>
                       </CardDescription>
                     </div>
                   </div>
@@ -296,18 +330,24 @@ export default function ViolationsPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <p className="text-sm text-muted-foreground">{violation.description}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {violation.description}
+                  </p>
 
                   <div className="flex items-center justify-between pt-4 border-t">
                     <div className="flex items-center space-x-6">
                       <div className="flex items-center space-x-2">
                         <AlertTriangle className="h-4 w-4 text-orange-500" />
-                        <span className="text-sm font-medium">{violation.points} points</span>
+                        <span className="text-sm font-medium">
+                          {violation.points} points
+                        </span>
                       </div>
                       {violation.salaryDeduction > 0 && (
                         <div className="flex items-center space-x-2">
                           <DollarSign className="h-4 w-4 text-red-500" />
-                          <span className="text-sm font-medium text-red-600">-${violation.salaryDeduction}</span>
+                          <span className="text-sm font-medium text-red-600">
+                            -${violation.salaryDeduction}
+                          </span>
                         </div>
                       )}
                     </div>
@@ -331,7 +371,9 @@ export default function ViolationsPage() {
           <div className="text-center py-12">
             <AlertTriangle className="mx-auto h-12 w-12 text-muted-foreground" />
             <h3 className="mt-2 text-sm font-semibold text-foreground">
-              {searchTerm || filterType !== "all" ? "No violations found" : "No violations"}
+              {searchTerm || filterType !== "all"
+                ? "No violations found"
+                : "No violations"}
             </h3>
             <p className="mt-1 text-sm text-muted-foreground">
               {searchTerm || filterType !== "all"
@@ -350,5 +392,5 @@ export default function ViolationsPage() {
         )}
       </div>
     </DashboardLayout>
-  )
+  );
 }

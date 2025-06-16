@@ -16,7 +16,6 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children, requiredRole }: DashboardLayoutProps) {
   const [mounted, setMounted] = useState(false)
 
-  // Prevent hydration mismatch and ensure smooth loading
   useEffect(() => {
     const timer = setTimeout(() => setMounted(true), 100)
     return () => clearTimeout(timer)

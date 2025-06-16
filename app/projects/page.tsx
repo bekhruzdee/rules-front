@@ -46,10 +46,8 @@ export default function ProjectsPage() {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        // Check if we're in demo mode first
         const token = localStorage.getItem("token");
         if (token === "demo-token") {
-          // Use mock data immediately for demo mode
           const mockProjects: Project[] = [
             {
               id: 1,
@@ -107,12 +105,11 @@ export default function ProjectsPage() {
           return;
         }
 
-        // Try to fetch from backend only if not in demo mode
         const response = await api.get("/projects");
         setProjects(response.data);
       } catch (error) {
         console.error("Failed to fetch projects:", error);
-        // Fallback to mock data
+
         const mockProjects: Project[] = [
           {
             id: 1,

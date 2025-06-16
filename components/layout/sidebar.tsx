@@ -41,7 +41,7 @@ export function Sidebar({ isCollapsed: externalCollapsed, onToggle }: SidebarPro
   const { user } = useAuth()
   const pathname = usePathname()
 
-  // Use external collapsed state if provided, otherwise use internal state
+  
   const collapsed = externalCollapsed !== undefined ? externalCollapsed : internalCollapsed
 
   const handleToggle = () => {

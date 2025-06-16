@@ -1,45 +1,43 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { DashboardLayout } from "@/components/layout/dashboard-layout"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Input } from "@/components/ui/input"
-import { api } from "@/lib/api/auth"
-import { Plus, Search, Mail, Calendar, Shield } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+import { useEffect, useState } from "react";
+import { DashboardLayout } from "@/components/layout/dashboard-layout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
+import { api } from "@/lib/api";
+import { Plus, Search, Mail, Calendar, Shield } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface UserInterface {
-  id: number
-  username: string
-  email: string
-  firstName?: string
-  lastName?: string
-  role: "ADMIN" | "USER"
-  avatar?: string
-  createdAt: string
+  id: number;
+  username: string;
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  role: "ADMIN" | "USER";
+  avatar?: string;
+  createdAt: string;
   _count: {
-    assignedTasks: number
-    assignedProjects: number
-    comments: number
-  }
+    assignedTasks: number;
+    assignedProjects: number;
+    comments: number;
+  };
 }
 
 export default function UsersPage() {
-  const [users, setUsers] = useState<UserInterface[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState("")
-  const { toast } = useToast()
+  const [users, setUsers] = useState<UserInterface[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        // Check if we're in demo mode first
-        const token = localStorage.getItem("token")
+        const token = localStorage.getItem("token");
         if (token === "demo-token") {
-          // Use mock data immediately for demo mode
           const mockUsers: UserInterface[] = [
             {
               id: 1,
@@ -83,18 +81,17 @@ export default function UsersPage() {
                 comments: 8,
               },
             },
-          ]
-          setUsers(mockUsers)
-          setLoading(false)
-          return
+          ];
+          setUsers(mockUsers);
+          setLoading(false);
+          return;
         }
 
-        // Try to fetch from backend only if not in demo mode
-        const response = await api.get("/users")
-        setUsers(response.data)
+        const response = await api.get("/users");
+        setUsers(response.data);
       } catch (error) {
-        console.error("Failed to fetch users:", error)
-        // Fallback to mock data for development
+        console.error("Failed to fetch users:", error);
+
         const mockUsers: UserInterface[] = [
           {
             id: 1,
@@ -138,33 +135,35 @@ export default function UsersPage() {
               comments: 8,
             },
           },
-        ]
-        setUsers(mockUsers)
+        ];
+        setUsers(mockUsers);
         toast({
           title: "Demo Mode",
           description: "Using mock data - connect to your backend API",
           variant: "default",
-        })
+        });
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchUsers()
-  }, [toast])
+    fetchUsers();
+  }, [toast]);
 
   const filteredUsers = users.filter(
     (user) =>
       user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
+      `${user.firstName} ${user.lastName}`
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
+  );
 
   const getRoleColor = (role: string) => {
     return role === "ADMIN"
       ? "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300"
-      : "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300"
-  }
+      : "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300";
+  };
 
   if (loading) {
     return (
@@ -200,7 +199,7 @@ export default function UsersPage() {
           </div>
         </div>
       </DashboardLayout>
-    )
+    );
   }
 
   return (
@@ -209,7 +208,9 @@ export default function UsersPage() {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Users</h1>
-            <p className="text-muted-foreground">Manage team members and their permissions</p>
+            <p className="text-muted-foreground">
+              Manage team members and their permissions
+            </p>
           </div>
           <Button>
             <Plus className="mr-2 h-4 w-4" />
@@ -268,16 +269,26 @@ export default function UsersPage() {
 
                   <div className="grid grid-cols-3 gap-4 pt-4 border-t">
                     <div className="text-center">
-                      <div className="text-lg font-semibold text-blue-600">{user._count.assignedTasks}</div>
+                      <div className="text-lg font-semibold text-blue-600">
+                        {user._count.assignedTasks}
+                      </div>
                       <div className="text-xs text-muted-foreground">Tasks</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-lg font-semibold text-green-600">{user._count.assignedProjects}</div>
-                      <div className="text-xs text-muted-foreground">Projects</div>
+                      <div className="text-lg font-semibold text-green-600">
+                        {user._count.assignedProjects}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        Projects
+                      </div>
                     </div>
                     <div className="text-center">
-                      <div className="text-lg font-semibold text-purple-600">{user._count.comments}</div>
-                      <div className="text-xs text-muted-foreground">Comments</div>
+                      <div className="text-lg font-semibold text-purple-600">
+                        {user._count.comments}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        Comments
+                      </div>
                     </div>
                   </div>
 
@@ -298,9 +309,13 @@ export default function UsersPage() {
         {filteredUsers.length === 0 && (
           <div className="text-center py-12">
             <div className="mx-auto h-12 w-12 text-muted-foreground" />
-            <h3 className="mt-2 text-sm font-semibold text-foreground">{searchTerm ? "No users found" : "No users"}</h3>
+            <h3 className="mt-2 text-sm font-semibold text-foreground">
+              {searchTerm ? "No users found" : "No users"}
+            </h3>
             <p className="mt-1 text-sm text-muted-foreground">
-              {searchTerm ? "Try adjusting your search terms" : "Get started by adding team members"}
+              {searchTerm
+                ? "Try adjusting your search terms"
+                : "Get started by adding team members"}
             </p>
             {!searchTerm && (
               <div className="mt-6">
@@ -314,5 +329,5 @@ export default function UsersPage() {
         )}
       </div>
     </DashboardLayout>
-  )
+  );
 }
