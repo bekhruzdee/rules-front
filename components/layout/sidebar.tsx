@@ -14,6 +14,7 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
+  User,
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -26,13 +27,30 @@ const navigation = [
   { name: "Users", href: "/users", icon: Users, adminOnly: true },
   { name: "Comments", href: "/comments", icon: MessageSquare },
   { name: "Violations", href: "/violations", icon: AlertTriangle, adminOnly: true },
+  { name: "Profile", href: "/profile", icon: User },
 ]
 
-export function Sidebar() {
+interface SidebarProps {
+  isCollapsed?: boolean
+  onToggle?: (collapsed: boolean) => void
+}
+
+export function Sidebar({ isCollapsed: externalCollapsed, onToggle }: SidebarProps = {}) {
+  const [internalCollapsed, setInternalCollapsed] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [collapsed, setCollapsed] = useState(false)
   const { user } = useAuth()
   const pathname = usePathname()
+
+  // Use external collapsed state if provided, otherwise use internal state
+  const collapsed = externalCollapsed !== undefined ? externalCollapsed : internalCollapsed
+
+  const handleToggle = () => {
+    if (onToggle) {
+      onToggle(!collapsed)
+    } else {
+      setInternalCollapsed(!collapsed)
+    }
+  }
 
   const filteredNavigation = navigation.filter((item) => !item.adminOnly || user?.role === "ADMIN")
 
@@ -41,7 +59,7 @@ export function Sidebar() {
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div
-          className="fixed bg-card inset-0 z-40 bg-black/20 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -59,7 +77,7 @@ export function Sidebar() {
       {/* Sidebar */}
       <div
         className={cn(
-          "fixed bg-card inset-y-0 left-0 z-50  from-slate-50 to-white border-r border-slate-200/60 transform transition-all duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 shadow-xl lg:shadow-none",
+          "fixed inset-y-0 left-0 z-50 bg-card/95 backdrop-blur-sm border-r border-border transform transition-all duration-300 ease-in-out will-change-transform lg:translate-x-0 lg:static lg:inset-0 shadow-xl lg:shadow-none",
           sidebarOpen ? "translate-x-0" : "-translate-x-full",
           collapsed ? "w-16" : "w-64",
         )}
@@ -68,7 +86,7 @@ export function Sidebar() {
           {/* Logo and Collapse Toggle */}
           <div
             className={cn(
-              "flex items-center justify-between h-16 px-4 border-b border-slate-200/60",
+              "flex items-center justify-between h-16 px-4 border-b border-border",
               collapsed && "justify-center",
             )}
           >
@@ -80,8 +98,8 @@ export function Sidebar() {
             <Button
               variant="ghost"
               size="icon"
-              className="hidden lg:flex h-8 w-8 hover:bg-slate-100"
-              onClick={() => setCollapsed(!collapsed)}
+              className="hidden lg:flex h-8 w-8 hover:bg-muted transition-colors duration-200"
+              onClick={handleToggle}
             >
               {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
             </Button>
@@ -96,21 +114,21 @@ export function Sidebar() {
                   key={item.name}
                   href={item.href}
                   className={cn(
-                    "flex  items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 group relative",
+                    "flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 group relative transform hover:scale-[1.02] will-change-transform",
                     isActive
                       ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg shadow-blue-500/25"
-                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/80",
+                      : "text-foreground hover:text-foreground hover:bg-muted/80",
                     collapsed && "justify-center",
                   )}
                   onClick={() => setSidebarOpen(false)}
                   title={collapsed ? item.name : undefined}
                 >
-                  <item.icon className={cn("h-5 w-5 flex-shrink-0 text-card-foreground", !collapsed && "mr-3")} />
-                  {!collapsed && <span className="truncate text-card-foreground">{item.name}</span>}
+                  <item.icon className={cn("h-5 w-5 flex-shrink-0", !collapsed && "mr-3")} />
+                  {!collapsed && <span className="truncate">{item.name}</span>}
 
                   {/* Tooltip for collapsed state */}
                   {collapsed && (
-                    <div className="absolute  left-full ml-2 px-2 py-1 bg-slate-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                    <div className="absolute left-full ml-2 px-2 py-1 bg-popover text-popover-foreground text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-lg border">
                       {item.name}
                     </div>
                   )}
