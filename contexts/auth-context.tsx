@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast"
 interface User {
   id: number
   username: string
-  email: string
+  email?: string
   role: "ADMIN" | "USER"
   firstName?: string
   lastName?: string
@@ -27,10 +27,7 @@ interface AuthContextType {
 
 interface RegisterData {
   username: string
-  email: string
   password: string
-  firstName?: string
-  lastName?: string
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -133,7 +130,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const register = async (userData: RegisterData) => {
     try {
-      await api.post("/auth/register", userData)
+      // Send only username and password to backend
+      const response = await api.post("/auth/register", {
+        username: userData.username,
+        password: userData.password,
+      })
 
       toast({
         title: "Registration successful",
@@ -142,6 +143,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       router.push("/login")
     } catch (error: any) {
+      // Check if it's a network error (backend not available)
+      if (error.code === "ERR_NETWORK" || error.message === "Network Error" || !error.response) {
+        toast({
+          title: "Demo Mode",
+          description: "Backend not available. Please try logging in instead.",
+        })
+        router.push("/login")
+        return
+      }
+
       toast({
         title: "Registration failed",
         description: error.response?.data?.message || "Registration failed",
