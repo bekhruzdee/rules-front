@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { api } from "@/lib/api"
+import { api } from "@/lib/api/auth"
 import { Plus, Users, Calendar, FileText, FolderOpen } from "lucide-react"
 import Link from "next/link"
 import { useToast } from "@/hooks/use-toast"

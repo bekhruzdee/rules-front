@@ -3,8 +3,8 @@
 import type React from "react"
 import { createContext, useContext, useEffect, useState } from "react"
 import { useRouter, usePathname } from "next/navigation"
-import { api } from "@/lib/api"
 import { useToast } from "@/hooks/use-toast"
+import { api } from "@/lib/api"
 
 interface User {
   id: number

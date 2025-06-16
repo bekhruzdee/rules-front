@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
-import { api } from "@/lib/api"
+import { api } from "@/lib/api/auth"
 import { Plus, Search, Mail, Calendar, Shield } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
