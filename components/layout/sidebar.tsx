@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useAuth } from "@/contexts/auth-context"
-import { Button } from "@/components/ui/button"
+import { useState } from "react";
+import { useAuth } from "@/contexts/auth-context";
+import { Button } from "@/components/ui/button";
 import {
   LayoutDashboard,
   FolderOpen,
@@ -15,10 +15,10 @@ import {
   ChevronLeft,
   ChevronRight,
   User,
-} from "lucide-react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { cn } from "@/lib/utils"
+} from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -26,32 +26,43 @@ const navigation = [
   { name: "Tasks", href: "/tasks", icon: CheckSquare },
   { name: "Users", href: "/users", icon: Users, adminOnly: true },
   { name: "Comments", href: "/comments", icon: MessageSquare },
-  { name: "Violations", href: "/violations", icon: AlertTriangle, adminOnly: true },
+  {
+    name: "Violations",
+    href: "/violations",
+    icon: AlertTriangle,
+    adminOnly: true,
+  },
   { name: "Profile", href: "/profile", icon: User },
-]
+];
 
 interface SidebarProps {
-  isCollapsed?: boolean
-  onToggle?: (collapsed: boolean) => void
+  isCollapsed?: boolean;
+  onToggle?: (collapsed: boolean) => void;
 }
 
-export function Sidebar({ isCollapsed: externalCollapsed, onToggle }: SidebarProps = {}) {
-  const [internalCollapsed, setInternalCollapsed] = useState(false)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-  const { user } = useAuth()
-  const pathname = usePathname()
+export function Sidebar({
+  isCollapsed: externalCollapsed,
+  onToggle,
+}: SidebarProps = {}) {
+  const [internalCollapsed, setInternalCollapsed] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { user } = useAuth();
+  const pathname = usePathname();
 
-  const collapsed = externalCollapsed !== undefined ? externalCollapsed : internalCollapsed
+  const collapsed =
+    externalCollapsed !== undefined ? externalCollapsed : internalCollapsed;
 
   const handleToggle = () => {
     if (onToggle) {
-      onToggle(!collapsed)
+      onToggle(!collapsed);
     } else {
-      setInternalCollapsed(!collapsed)
+      setInternalCollapsed(!collapsed);
     }
-  }
+  };
 
-  const filteredNavigation = navigation.filter((item) => !item.adminOnly || user?.role === "ADMIN")
+  const filteredNavigation = navigation.filter(
+    (item) => !item.adminOnly || user?.role === "ADMIN"
+  );
 
   return (
     <>
@@ -78,7 +89,7 @@ export function Sidebar({ isCollapsed: externalCollapsed, onToggle }: SidebarPro
         className={cn(
           "fixed inset-y-0 left-0 z-50 bg-card/95 backdrop-blur-sm border-r border-border transform transition-all duration-300 ease-in-out will-change-transform lg:translate-x-0 lg:static lg:inset-0 shadow-xl lg:shadow-none",
           sidebarOpen ? "translate-x-0" : "-translate-x-full",
-          collapsed ? "w-16" : "w-64",
+          collapsed ? "w-16" : "w-64"
         )}
       >
         <div className="flex flex-col h-full">
@@ -86,7 +97,7 @@ export function Sidebar({ isCollapsed: externalCollapsed, onToggle }: SidebarPro
           <div
             className={cn(
               "flex items-center justify-between h-16 px-4 border-b border-border",
-              collapsed && "justify-center",
+              collapsed && "justify-center"
             )}
           >
             {!collapsed ? (
@@ -97,7 +108,10 @@ export function Sidebar({ isCollapsed: externalCollapsed, onToggle }: SidebarPro
                 Rules
               </Link>
             ) : (
-              <Link href="/dashboard" className="hover:opacity-80 transition-opacity duration-200">
+              <Link
+                href="/dashboard"
+                className="hover:opacity-80 transition-opacity duration-200"
+              >
                 <span className="sr-only">Home</span>
               </Link>
             )}
@@ -107,14 +121,18 @@ export function Sidebar({ isCollapsed: externalCollapsed, onToggle }: SidebarPro
               className="hidden lg:flex h-8 w-8 hover:bg-muted transition-colors duration-200"
               onClick={handleToggle}
             >
-              {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+              {collapsed ? (
+                <ChevronRight className="h-4 w-4" />
+              ) : (
+                <ChevronLeft className="h-4 w-4" />
+              )}
             </Button>
           </div>
 
           {/* Navigation Items */}
           <nav className="flex-1 px-3 py-6 space-y-1">
             {filteredNavigation.map((item) => {
-              const isActive = pathname === item.href
+              const isActive = pathname === item.href;
               return (
                 <Link
                   key={item.name}
@@ -124,12 +142,17 @@ export function Sidebar({ isCollapsed: externalCollapsed, onToggle }: SidebarPro
                     isActive
                       ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg shadow-blue-500/25"
                       : "text-foreground hover:text-foreground hover:bg-muted/80",
-                    collapsed && "justify-center",
+                    collapsed && "justify-center"
                   )}
                   onClick={() => setSidebarOpen(false)}
                   title={collapsed ? item.name : undefined}
                 >
-                  <item.icon className={cn("h-5 w-5 flex-shrink-0", !collapsed && "mr-3")} />
+                  <item.icon
+                    className={cn(
+                      "h-5 w-5 flex-shrink-0",
+                      !collapsed && "mr-3"
+                    )}
+                  />
                   {!collapsed && <span className="truncate">{item.name}</span>}
                   {collapsed && (
                     <div className="absolute left-full ml-2 px-2 py-1 bg-popover text-popover-foreground text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-lg border">
@@ -137,11 +160,11 @@ export function Sidebar({ isCollapsed: externalCollapsed, onToggle }: SidebarPro
                     </div>
                   )}
                 </Link>
-              )
+              );
             })}
           </nav>
         </div>
       </div>
     </>
-  )
+  );
 }

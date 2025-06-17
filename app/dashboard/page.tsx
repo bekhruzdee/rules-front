@@ -292,7 +292,7 @@ export default function DashboardPage() {
                         <p className="text-xs text-muted-foreground">
                           {new Date(activity.createdAt).toLocaleDateString()}
                         </p>
-                      </div  >
+                      </div>
                     </div>
                   ))
                 ) : (
