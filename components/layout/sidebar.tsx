@@ -41,7 +41,6 @@ export function Sidebar({ isCollapsed: externalCollapsed, onToggle }: SidebarPro
   const { user } = useAuth()
   const pathname = usePathname()
 
-  
   const collapsed = externalCollapsed !== undefined ? externalCollapsed : internalCollapsed
 
   const handleToggle = () => {
@@ -56,7 +55,7 @@ export function Sidebar({ isCollapsed: externalCollapsed, onToggle }: SidebarPro
 
   return (
     <>
-      {/* Mobile sidebar overlay */}
+      {/* Mobile overlay */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm lg:hidden"
@@ -64,7 +63,7 @@ export function Sidebar({ isCollapsed: externalCollapsed, onToggle }: SidebarPro
         />
       )}
 
-      {/* Mobile sidebar toggle */}
+      {/* Mobile toggle button */}
       <Button
         variant="ghost"
         size="icon"
@@ -90,10 +89,17 @@ export function Sidebar({ isCollapsed: externalCollapsed, onToggle }: SidebarPro
               collapsed && "justify-center",
             )}
           >
-            {!collapsed && (
-              <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            {!collapsed ? (
+              <Link
+                href="/dashboard"
+                className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:opacity-80 transition-opacity duration-200"
+              >
                 Rules
-              </h1>
+              </Link>
+            ) : (
+              <Link href="/dashboard" className="hover:opacity-80 transition-opacity duration-200">
+                <span className="sr-only">Home</span>
+              </Link>
             )}
             <Button
               variant="ghost"
@@ -105,7 +111,7 @@ export function Sidebar({ isCollapsed: externalCollapsed, onToggle }: SidebarPro
             </Button>
           </div>
 
-          {/* Navigation */}
+          {/* Navigation Items */}
           <nav className="flex-1 px-3 py-6 space-y-1">
             {filteredNavigation.map((item) => {
               const isActive = pathname === item.href
@@ -125,8 +131,6 @@ export function Sidebar({ isCollapsed: externalCollapsed, onToggle }: SidebarPro
                 >
                   <item.icon className={cn("h-5 w-5 flex-shrink-0", !collapsed && "mr-3")} />
                   {!collapsed && <span className="truncate">{item.name}</span>}
-
-                  {/* Tooltip for collapsed state */}
                   {collapsed && (
                     <div className="absolute left-full ml-2 px-2 py-1 bg-popover text-popover-foreground text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-lg border">
                       {item.name}
