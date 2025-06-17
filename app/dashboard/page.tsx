@@ -55,7 +55,7 @@ export default function DashboardPage() {
 
         let baseStats: DashboardStats = {
           totalUsers: 0,
-          totalProjects: 8,
+          totalProjects: 0,
           totalTasks: 24,
           totalViolations: 3,
           tasksByStatus: {
@@ -86,21 +86,27 @@ export default function DashboardPage() {
         };
 
         if (token === "demo-token") {
-          const res = await api.get("/users/count");
-          baseStats.totalUsers = res.data.total;
+          const [usersRes, projectsRes] = await Promise.all([
+            api.get("/users/count"),
+            api.get("/projects/count"),
+          ]);
+          baseStats.totalUsers = usersRes.data.total;
+          baseStats.totalProjects = projectsRes.data.total;
           setStats(baseStats);
           setLoading(false);
           return;
         }
 
-        const [statsRes, usersRes] = await Promise.all([
+        const [statsRes, usersRes, projectsRes] = await Promise.all([
           api.get("/dashboard/stats"),
           api.get("/users/count"),
+          api.get("/projects/count"),
         ]);
 
         const updatedStats: DashboardStats = {
           ...statsRes.data,
           totalUsers: usersRes.data.total,
+          totalProjects: projectsRes.data.total,
         };
 
         setStats(updatedStats);
@@ -190,7 +196,7 @@ export default function DashboardPage() {
               <div className="text-2xl font-bold">
                 {stats?.totalProjects || 0}
               </div>
-              <p className="text-xs text-muted-foreground">Active projects</p>
+              <p className="text-xs text-muted-foreground">Total projects</p>
             </CardContent>
           </Card>
 
