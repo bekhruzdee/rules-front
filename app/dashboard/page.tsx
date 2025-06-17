@@ -53,10 +53,13 @@ export default function DashboardPage() {
       try {
         const token = localStorage.getItem("token");
 
+        const tasksCountRes = await api.get("/tasks/count");
+        const taskCount = tasksCountRes.data.total;
+
         let baseStats: DashboardStats = {
           totalUsers: 0,
-          totalProjects: 0,
-          totalTasks: 24,
+          totalProjects: 8,
+          totalTasks: taskCount,
           totalViolations: 3,
           tasksByStatus: {
             TODO: 8,
@@ -86,27 +89,22 @@ export default function DashboardPage() {
         };
 
         if (token === "demo-token") {
-          const [usersRes, projectsRes] = await Promise.all([
-            api.get("/users/count"),
-            api.get("/projects/count"),
-          ]);
-          baseStats.totalUsers = usersRes.data.total;
-          baseStats.totalProjects = projectsRes.data.total;
+          const res = await api.get("/users/count");
+          baseStats.totalUsers = res.data.total;
           setStats(baseStats);
           setLoading(false);
           return;
         }
 
-        const [statsRes, usersRes, projectsRes] = await Promise.all([
+        const [statsRes, usersRes] = await Promise.all([
           api.get("/dashboard/stats"),
           api.get("/users/count"),
-          api.get("/projects/count"),
         ]);
 
         const updatedStats: DashboardStats = {
           ...statsRes.data,
           totalUsers: usersRes.data.total,
-          totalProjects: projectsRes.data.total,
+          totalTasks: taskCount, // <-- yangilangan qiymat
         };
 
         setStats(updatedStats);
@@ -196,7 +194,7 @@ export default function DashboardPage() {
               <div className="text-2xl font-bold">
                 {stats?.totalProjects || 0}
               </div>
-              <p className="text-xs text-muted-foreground">Total projects</p>
+              <p className="text-xs text-muted-foreground">Active projects</p>
             </CardContent>
           </Card>
 
@@ -294,7 +292,7 @@ export default function DashboardPage() {
                         <p className="text-xs text-muted-foreground">
                           {new Date(activity.createdAt).toLocaleDateString()}
                         </p>
-                      </div>
+                      </div  >
                     </div>
                   ))
                 ) : (
