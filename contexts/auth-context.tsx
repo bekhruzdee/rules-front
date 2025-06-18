@@ -246,6 +246,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const isAdmin = user?.role === "ADMIN";
   const isUser = user?.role === "USER";
 
+  console.log(isAuthenticated);
+  
+
   useEffect(() => {
     const initializeAuth = async () => {
       try {
@@ -286,7 +289,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (username: string, password: string) => {
     try {
       const response = await api.post("/auth/login", { username, password });
-      const { access_token, user: userData } = response.data;
+      console.log(response.data);
+      
+      const { access_token,  userData } = response.data;
+      console.log(userData);
+      
 
       localStorage.setItem("token", access_token);
       setUser(userData);
@@ -296,36 +303,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         description: `Welcome back, ${userData.username}!`,
       });
 
-      router.push("/dashboard");
+      router.replace("/dashboard");
     } catch (error: any) {
-      if (
-        error.code === "ERR_NETWORK" ||
-        error.message === "Network Error" ||
-        !error.response
-      ) {
-        const demoUser = {
-          id: 1,
-          username: username,
-          email: `${username}@example.com`,
-          role: (username.toLowerCase() === "admin" ? "ADMIN" : "USER") as
-            | "ADMIN"
-            | "USER",
-          firstName: username.charAt(0).toUpperCase() + username.slice(1),
-          lastName: "Demo",
-        };
-
-        localStorage.setItem("token", "demo-token");
-        setUser(demoUser);
-
-        toast({
-          title: "Demo Mode",
-          description: `Welcome ${demoUser.firstName}! Backend not available, using demo data.`,
-        });
-
-        router.push("/dashboard");
-        return;
-      }
-
+      
       toast({
         title: "Login failed",
         description: error.response?.data?.message || "Invalid credentials",
