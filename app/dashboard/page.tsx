@@ -104,7 +104,7 @@ export default function DashboardPage() {
         const updatedStats: DashboardStats = {
           ...statsRes.data,
           totalUsers: usersRes.data.total,
-          totalTasks: taskCount, // <-- yangilangan qiymat
+          totalTasks: taskCount,
         };
 
         setStats(updatedStats);
@@ -155,9 +155,13 @@ export default function DashboardPage() {
     );
   }
 
-  const taskCompletionRate = stats
-    ? Math.round((stats.tasksByStatus.DONE / (stats.totalTasks || 1)) * 100)
-    : 0;
+  const taskCompletionRate =
+    stats && stats.totalTasks > 0
+      ? Math.min(
+          100,
+          Math.round((stats.tasksByStatus.DONE / stats.totalTasks) * 100)
+        )
+      : 0;
 
   return (
     <DashboardLayout>
@@ -205,9 +209,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats?.totalTasks || 0}</div>
-              <p className="text-xs text-muted-foreground">
-                {taskCompletionRate}% completed
-              </p>
+              <p className="text-xs text-muted-foreground">All Tasks</p>
             </CardContent>
           </Card>
 
