@@ -39,13 +39,11 @@ export default function LoginPage() {
     try {
       await login(username, password);
     } catch (error) {
-      
     } finally {
       setLoading(false);
     }
   };
 
-  
   if (authLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -53,7 +51,6 @@ export default function LoginPage() {
       </div>
     );
   }
-
 
   if (isAuthenticated) {
     return null;
