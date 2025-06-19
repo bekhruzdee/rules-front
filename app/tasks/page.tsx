@@ -1,27 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { api } from "@/lib/api";
-import { Plus, Calendar } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
+import { Calendar, Plus } from "lucide-react";
 import {
   DragDropContext,
   Droppable,
   Draggable,
   type DropResult,
 } from "@hello-pangea/dnd";
+import { TaskForm } from "@/components/task-form";
+import { api } from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
+import { format, parseISO, isValid } from "date-fns";
 
-// Interfaces
 interface User {
   id: number;
   username: string;
@@ -46,7 +42,53 @@ interface Task {
   project: Project;
 }
 
-// Mock Data
+interface TaskFormData {
+  title: string;
+  description: string;
+  status: "TODO" | "IN_PROGRESS" | "DONE";
+  priority: "LOW" | "MEDIUM" | "HIGH";
+  dueDate?: string;
+  completed: boolean;
+  project: { id: string; name: string };
+  assignedUsers?: { id: string }[];
+}
+
+const statusColumns = {
+  TODO: { title: "To Do", color: "bg-gray-100 dark:bg-gray-800" },
+  IN_PROGRESS: { title: "In Progress", color: "bg-blue-100 dark:bg-blue-900" },
+  DONE: { title: "Done", color: "bg-green-100 dark:bg-green-900" },
+};
+
+// Mock Data for Demo Mode
+const MOCK_USERS: User[] = [
+  {
+    id: 1,
+    username: "johndoe",
+    firstName: "John",
+    lastName: "Doe",
+    avatar: "/placeholder.svg",
+  },
+  {
+    id: 2,
+    username: "janedoe",
+    firstName: "Jane",
+    lastName: "Doe",
+    avatar: "/placeholder.svg",
+  },
+  {
+    id: 3,
+    username: "mikejohnson",
+    firstName: "Mike",
+    lastName: "Johnson",
+    avatar: "/placeholder.svg",
+  },
+];
+
+const MOCK_PROJECTS: Project[] = [
+  { id: 1, name: "Website Redesign" },
+  { id: 2, name: "Mobile App Development" },
+];
+
 const MOCK_TASKS: Task[] = [
   {
     id: 1,
@@ -55,8 +97,8 @@ const MOCK_TASKS: Task[] = [
     status: "TODO",
     priority: "HIGH",
     dueDate: new Date(Date.now() + 86400000 * 3).toISOString(),
-    assignedUser: { id: 1, username: "johndoe", firstName: "John", lastName: "Doe" },
-    project: { id: 1, name: "Website Redesign" },
+    assignedUser: MOCK_USERS[0],
+    project: MOCK_PROJECTS[0],
   },
   {
     id: 2,
@@ -64,8 +106,8 @@ const MOCK_TASKS: Task[] = [
     description: "Set up JWT-based authentication system",
     status: "IN_PROGRESS",
     priority: "HIGH",
-    assignedUser: { id: 2, username: "janedoe", firstName: "Jane", lastName: "Doe" },
-    project: { id: 2, name: "Mobile App Development" },
+    assignedUser: MOCK_USERS[1],
+    project: MOCK_PROJECTS[1],
   },
   {
     id: 3,
@@ -73,97 +115,152 @@ const MOCK_TASKS: Task[] = [
     description: "Create comprehensive test suite for core functionality",
     status: "DONE",
     priority: "MEDIUM",
-    assignedUser: { id: 3, username: "mikejohnson", firstName: "Mike", lastName: "Johnson" },
-    project: { id: 1, name: "Website Redesign" },
+    assignedUser: MOCK_USERS[2],
+    project: MOCK_PROJECTS[0],
   },
 ];
-
-// Status Columns
-const statusColumns = {
-  TODO: { title: "To Do", color: "bg-gray-100 dark:bg-gray-800" },
-  IN_PROGRESS: { title: "In Progress", color: "bg-blue-100 dark:bg-blue-900" },
-  DONE: { title: "Done", color: "bg-green-100 dark:bg-green-900" },
-};
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [showTaskForm, setShowTaskForm] = useState(false);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const { toast } = useToast();
 
-  useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        setError(null);
-        const token = localStorage.getItem("token");
-        if (!token) {
-          throw new Error("No authentication token found");
-        }
-        if (token === "demo-token") {
-          setTasks(MOCK_TASKS);
-          setLoading(false);
-          return;
-        }
-        const response = await api.get("/tasks");
-        setTasks(Array.isArray(response.data) ? response.data : []);
-      } catch (error) {
-        console.error("Failed to fetch tasks:", error);
+  const fetchInitialData = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token || token === "demo-token") {
         setTasks(MOCK_TASKS);
-        setError("Failed to load tasks. Showing demo data.");
+        setProjects(MOCK_PROJECTS);
+        setUsers(MOCK_USERS);
+        toast({ title: "Demo Mode", description: "Using sample data" });
+        return;
+      }
+
+      const [tasksRes, projectsRes, usersRes] = await Promise.all([
+        api.get("/tasks").catch(() => ({ data: [] })),
+        api.get("/projects").catch(() => ({ data: [] })),
+        api.get("/users").catch(() => ({ data: [] })),
+      ]);
+
+      const tasksData = Array.isArray(tasksRes.data) ? tasksRes.data : [];
+      const projectsData = Array.isArray(projectsRes.data)
+        ? projectsRes.data
+        : [];
+      const usersData = Array.isArray(usersRes.data) ? usersRes.data : [];
+
+      setTasks(tasksData);
+      setProjects(projectsData);
+      setUsers(usersData);
+
+      if (!tasksData.length || !projectsData.length || !usersData.length) {
         toast({
-          title: "Demo Mode",
-          description: "Using mock data - connect to your backend API",
+          title: "Some data missing",
+          description: `${!tasksData.length ? "Tasks, " : ""}${
+            !projectsData.length ? "Projects, " : ""
+          }${!usersData.length ? "Users" : ""} not found.`,
           variant: "default",
         });
-      } finally {
-        setLoading(false);
       }
-    };
+    } catch (err: any) {
+      toast({
+        title: "Error loading data",
+        description: err.message || "Failed to fetch tasks, projects, or users",
+        variant: "destructive",
+        action: (
+          <Button variant="outline" size="sm" onClick={fetchInitialData}>
+            Retry
+          </Button>
+        ),
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchTasks();
+  useEffect(() => {
+    fetchInitialData();
   }, [toast]);
+
+  const mappedUsers = useMemo(
+    () =>
+      users.map((u) => ({
+        id: String(u.id),
+        name: `${u.firstName || ""} ${u.lastName || ""}`.trim() || u.username,
+        email: `${u.username}@example.com`,
+      })),
+    [users]
+  );
+
+  const mappedProjects = useMemo(
+    () =>
+      projects.map((p) => ({
+        id: String(p.id),
+        name: p.name,
+        description: "No description",
+        imagePath: "/placeholder.svg",
+        users: mappedUsers,
+      })),
+    [projects, mappedUsers]
+  );
+
+  const handleCreateTask = async (data: TaskFormData) => {
+    try {
+      const res = await api.post("/tasks", {
+        title: data.title,
+        description: data.description,
+        status: data.status,
+        priority: data.priority,
+        dueDate: data.dueDate,
+        completed: data.completed,
+        projectId: Number(data.project.id),
+        assignedUserId: data.assignedUsers?.[0]?.id
+          ? Number(data.assignedUsers[0].id)
+          : undefined,
+      });
+      setTasks((prev) => [...prev, res.data]);
+      setShowTaskForm(false);
+      toast({ title: "Task created successfully" });
+    } catch (err: any) {
+      toast({
+        title: "Failed to create task",
+        description: err.message || "Unable to create task",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleDragEnd = async (result: DropResult) => {
     if (!result.destination) return;
-
     const { draggableId, destination } = result;
-    const taskId = Number.parseInt(draggableId);
-    const newStatus = destination.droppableId as "TODO" | "IN_PROGRESS" | "DONE";
+    const taskId = Number(draggableId);
+    const newStatus = destination.droppableId as Task["status"];
 
-    // Optimistic update
-    setTasks((prevTasks) =>
-      Array.isArray(prevTasks)
-        ? prevTasks.map((task) =>
-            task.id === taskId ? { ...task, status: newStatus } : task
-          )
-        : prevTasks
+    const updatedTasks = tasks.map((task) =>
+      task.id === taskId ? { ...task, status: newStatus } : task
     );
+    setTasks(updatedTasks);
 
     try {
       await api.patch(`/tasks/${taskId}`, { status: newStatus });
+      toast({ title: "Task status updated" });
+    } catch (err: any) {
+      setTasks(tasks); // Revert optimistic update
       toast({
-        title: "Task Updated",
-        description: "Task status has been updated successfully",
-      });
-    } catch (error) {
-      console.error("Failed to update task status:", error);
-      setTasks((prevTasks) =>
-        Array.isArray(prevTasks)
-          ? prevTasks.map((task) =>
-              task.id === taskId
-                ? {
-                    ...task,
-                    status:
-                      prevTasks.find((t) => t.id === taskId)?.status || "TODO",
-                  }
-                : task
-            )
-          : prevTasks
-      );
-      toast({
-        title: "Error",
-        description: "Failed to update task status",
+        title: "Error updating task",
+        description: err.message || "Failed to update task status",
         variant: "destructive",
+        action: (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleDragEnd(result)}
+          >
+            Retry
+          </Button>
+        ),
       });
     }
   };
@@ -181,54 +278,20 @@ export default function TasksPage() {
     }
   };
 
-  const getTasksByStatus = (status: keyof typeof statusColumns) => {
-    return Array.isArray(tasks) ? tasks.filter((task) => task.status === status) : [];
-  };
+  const getTasksByStatus = (status: keyof typeof statusColumns) =>
+    tasks.filter((task) => task.status === status);
 
   if (loading) {
     return (
       <DashboardLayout>
-        <div className="space-y-6">
+        <div className="space-y-6 p-4">
           <div className="flex justify-between items-center">
             <h1 className="text-3xl font-bold tracking-tight">Tasks</h1>
-            <Button aria-label="Create new task">
-              <Plus className="mr-2 h-4 w-4" />
-              New Task
+            <Button disabled>
+              <Plus className="mr-2 h-4 w-4" /> New Task
             </Button>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {Object.keys(statusColumns).map((status) => (
-              <Card key={status} className="animate-pulse">
-                <CardHeader>
-                  <div className="h-4 bg-muted rounded w-1/2" />
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {[...Array(3)].map((_, i) => (
-                      <div key={i} className="h-20 bg-muted rounded" />
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </DashboardLayout>
-    );
-  }
-
-  if (error) {
-    return (
-      <DashboardLayout>
-        <div className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h1 className="text-3xl font-bold tracking-tight">Tasks</h1>
-            <Button aria-label="Create new task">
-              <Plus className="mr-2 h-4 w-4" />
-              New Task
-            </Button>
-          </div>
-          <p className="text-red-500">{error}</p>
+          <p className="text-muted-foreground">Loading tasks...</p>
         </div>
       </DashboardLayout>
     );
@@ -236,27 +299,38 @@ export default function TasksPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-6 p-4">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Tasks</h1>
-            <p className="text-muted-foreground">Manage your tasks with a Kanban board</p>
+            <p className="text-muted-foreground">Manage your tasks visually</p>
           </div>
-          <Button aria-label="Create new task">
-            <Plus className="mr-2 h-4 w-4" />
-            New Task
+          <Button
+            onClick={() => setShowTaskForm(true)}
+            className="transition-all hover:scale-105"
+          >
+            <Plus className="mr-2 h-4 w-4" /> New Task
           </Button>
         </div>
+
+        {showTaskForm && (
+          <TaskForm
+            users={mappedUsers}
+            projects={mappedProjects}
+            onSubmit={handleCreateTask}
+            onCancel={() => setShowTaskForm(false)}
+          />
+        )}
 
         <DragDropContext onDragEnd={handleDragEnd}>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {Object.entries(statusColumns).map(([status, config]) => (
-              <Card key={status} className={config.color} role="region" aria-label={`${config.title} tasks`}>
+              <Card key={status} className={config.color}>
                 <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
+                  <CardTitle className="flex justify-between">
                     {config.title}
                     <Badge variant="secondary">
-                      {getTasksByStatus(status as keyof typeof statusColumns).length}
+                      {getTasksByStatus(status as Task["status"]).length}
                     </Badge>
                   </CardTitle>
                 </CardHeader>
@@ -267,61 +341,102 @@ export default function TasksPage() {
                         ref={provided.innerRef}
                         {...provided.droppableProps}
                         className={`space-y-3 min-h-[200px] ${
-                          snapshot.isDraggingOver ? "bg-muted/50 rounded-lg p-2" : ""
+                          snapshot.isDraggingOver
+                            ? "bg-muted/50 p-2 rounded-lg"
+                            : ""
                         }`}
-                        aria-label={`${config.title} droppable area`}
                       >
-                        {getTasksByStatus(status as keyof typeof statusColumns).map((task, index) => (
-                          <Draggable key={task.id} draggableId={task.id.toString()} index={index}>
-                            {(provided, snapshot) => (
-                              <Card
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                className={`cursor-move ${snapshot.isDragging ? "shadow-lg rotate-3" : ""}`}
-                                role="article"
-                                aria-label={`Task: ${task.title}`}
-                              >
-                                <CardContent className="p-4">
-                                  <div className="space-y-3">
-                                    <div className="flex items-start justify-between">
-                                      <h3 className="font-medium text-sm leading-tight">{task.title}</h3>
-                                      <Badge className={getPriorityColor(task.priority)}>{task.priority}</Badge>
+                        {getTasksByStatus(status as Task["status"]).map(
+                          (task, index) => (
+                            <Draggable
+                              key={task.id}
+                              draggableId={task.id.toString()}
+                              index={index}
+                            >
+                              {(provided, snapshot) => (
+                                <Card
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  className={`cursor-move transition-all ${
+                                    snapshot.isDragging
+                                      ? "shadow-lg rotate-3"
+                                      : ""
+                                  }`}
+                                >
+                                  <CardContent className="p-4 space-y-2">
+                                    <div className="flex justify-between">
+                                      <h3 className="font-medium text-sm">
+                                        {task.title}
+                                      </h3>
+                                      <Badge
+                                        className={getPriorityColor(
+                                          task.priority
+                                        )}
+                                      >
+                                        {task.priority}
+                                      </Badge>
                                     </div>
-                                    {task.description && (
-                                      <p className="text-xs text-muted-foreground line-clamp-2">{task.description}</p>
-                                    )}
-                                    <div className="flex items-center justify-between text-xs text-muted-foreground">
-                                      <span className="font-medium">{task.project.name}</span>
-                                      {task.dueDate && (
-                                        <div className="flex items-center">
-                                          <Calendar className="mr-1 h-3 w-3" />
-                                          <span>{new Date(task.dueDate).toLocaleDateString()}</span>
-                                        </div>
-                                      )}
+                                    <p className="text-xs text-muted-foreground line-clamp-2">
+                                      {task.description}
+                                    </p>
+                                    <div className="flex justify-between text-xs text-muted-foreground">
+                                      <span className="font-medium">
+                                        {task.project.name}
+                                      </span>
+                                      {task.dueDate &&
+                                        isValid(parseISO(task.dueDate)) && (
+                                          <div className="flex items-center">
+                                            <Calendar className="mr-1 h-3 w-3" />
+                                            <span>
+                                              {format(
+                                                parseISO(task.dueDate),
+                                                "MMM d, yyyy"
+                                              )}
+                                            </span>
+                                          </div>
+                                        )}
                                     </div>
                                     {task.assignedUser && (
                                       <div className="flex items-center space-x-2">
                                         <Avatar className="h-6 w-6">
-                                          <AvatarImage src={task.assignedUser.avatar || "/placeholder.svg"} />
+                                          <AvatarImage
+                                            src={
+                                              task.assignedUser.avatar ||
+                                              "/placeholder.svg"
+                                            }
+                                          />
                                           <AvatarFallback>
-                                            {(task.assignedUser.firstName?.[0] || task.assignedUser.username[0]).toUpperCase()}
-                                            {(task.assignedUser.lastName?.[0] || "").toUpperCase()}
+                                            {(
+                                              task.assignedUser
+                                                .firstName?.[0] ||
+                                              task.assignedUser.username[0]
+                                            ).toUpperCase()}
+                                            {(
+                                              task.assignedUser.lastName?.[0] ||
+                                              ""
+                                            ).toUpperCase()}
                                           </AvatarFallback>
                                         </Avatar>
-                                        <span className="text-xs text-muted-foreground">
-                                          {task.assignedUser.firstName || task.assignedUser.lastName
-                                            ? `${task.assignedUser.firstName || ""} ${task.assignedUser.lastName || ""}`.trim()
+                                        <span className="text-xs">
+                                          {task.assignedUser.firstName ||
+                                          task.assignedUser.lastName
+                                            ? `${
+                                                task.assignedUser.firstName ||
+                                                ""
+                                              } ${
+                                                task.assignedUser.lastName || ""
+                                              }`.trim()
                                             : task.assignedUser.username}
                                         </span>
                                       </div>
                                     )}
-                                  </div>
-                                </CardContent>
-                              </Card>
-                            )}
-                          </Draggable>
-                        ))}
+                                  </CardContent>
+                                </Card>
+                              )}
+                            </Draggable>
+                          )
+                        )}
                         {provided.placeholder}
                       </div>
                     )}
@@ -331,29 +446,6 @@ export default function TasksPage() {
             ))}
           </div>
         </DragDropContext>
-
-        {tasks.length === 0 && (
-          <div className="text-center py-12">
-            <div className="mx-auto h-12 w-12 text-muted-foreground">
-              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                />
-              </svg>
-            </div>
-            <h3 className="mt-2 text-sm font-semibold text-foreground">No tasks</h3>
-            <p className="mt-1 text-sm text-muted-foreground">Get started by creating a new task.</p>
-            <div className="mt-6">
-              <Button aria-label="Create new task">
-                <Plus className="mr-2 h-4 w-4" />
-                New Task
-              </Button>
-            </div>
-          </div>
-        )}
       </div>
     </DashboardLayout>
   );
