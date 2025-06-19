@@ -2,7 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -16,6 +21,20 @@ import {
   type DropResult,
 } from "@hello-pangea/dnd";
 
+// Interfaces
+interface User {
+  id: number;
+  username: string;
+  firstName?: string;
+  lastName?: string;
+  avatar?: string;
+}
+
+interface Project {
+  id: number;
+  name: string;
+}
+
 interface Task {
   id: number;
   title: string;
@@ -23,19 +42,43 @@ interface Task {
   status: "TODO" | "IN_PROGRESS" | "DONE";
   priority: "LOW" | "MEDIUM" | "HIGH";
   dueDate?: string;
-  assignedUser?: {
-    id: number;
-    username: string;
-    firstName?: string;
-    lastName?: string;
-    avatar?: string;
-  };
-  project: {
-    id: number;
-    name: string;
-  };
+  assignedUser?: User;
+  project: Project;
 }
 
+// Mock Data
+const MOCK_TASKS: Task[] = [
+  {
+    id: 1,
+    title: "Design Homepage Layout",
+    description: "Create wireframes and mockups for the new homepage design",
+    status: "TODO",
+    priority: "HIGH",
+    dueDate: new Date(Date.now() + 86400000 * 3).toISOString(),
+    assignedUser: { id: 1, username: "johndoe", firstName: "John", lastName: "Doe" },
+    project: { id: 1, name: "Website Redesign" },
+  },
+  {
+    id: 2,
+    title: "Implement User Authentication",
+    description: "Set up JWT-based authentication system",
+    status: "IN_PROGRESS",
+    priority: "HIGH",
+    assignedUser: { id: 2, username: "janedoe", firstName: "Jane", lastName: "Doe" },
+    project: { id: 2, name: "Mobile App Development" },
+  },
+  {
+    id: 3,
+    title: "Write Unit Tests",
+    description: "Create comprehensive test suite for core functionality",
+    status: "DONE",
+    priority: "MEDIUM",
+    assignedUser: { id: 3, username: "mikejohnson", firstName: "Mike", lastName: "Johnson" },
+    project: { id: 1, name: "Website Redesign" },
+  },
+];
+
+// Status Columns
 const statusColumns = {
   TODO: { title: "To Do", color: "bg-gray-100 dark:bg-gray-800" },
   IN_PROGRESS: { title: "In Progress", color: "bg-blue-100 dark:bg-blue-900" },
@@ -45,136 +88,28 @@ const statusColumns = {
 export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
     const fetchTasks = async () => {
       try {
+        setError(null);
         const token = localStorage.getItem("token");
+        if (!token) {
+          throw new Error("No authentication token found");
+        }
         if (token === "demo-token") {
-          const mockTasks: Task[] = [
-            {
-              id: 1,
-              title: "Design Homepage Layout",
-              description:
-                "Create wireframes and mockups for the new homepage design",
-              status: "TODO",
-              priority: "HIGH",
-              dueDate: new Date(Date.now() + 86400000 * 3).toISOString(),
-              assignedUser: {
-                id: 1,
-                username: "johndoe",
-                firstName: "John",
-                lastName: "Doe",
-              },
-              project: {
-                id: 1,
-                name: "Website Redesign",
-              },
-            },
-            {
-              id: 2,
-              title: "Implement User Authentication",
-              description: "Set up JWT-based authentication system",
-              status: "IN_PROGRESS",
-              priority: "HIGH",
-              assignedUser: {
-                id: 2,
-                username: "janedoe",
-                firstName: "Jane",
-                lastName: "Doe",
-              },
-              project: {
-                id: 2,
-                name: "Mobile App Development",
-              },
-            },
-            {
-              id: 3,
-              title: "Write Unit Tests",
-              description:
-                "Create comprehensive test suite for core functionality",
-              status: "DONE",
-              priority: "MEDIUM",
-              assignedUser: {
-                id: 3,
-                username: "mikejohnson",
-                firstName: "Mike",
-                lastName: "Johnson",
-              },
-              project: {
-                id: 1,
-                name: "Website Redesign",
-              },
-            },
-          ];
-          setTasks(mockTasks);
+          setTasks(MOCK_TASKS);
           setLoading(false);
           return;
         }
-
         const response = await api.get("/tasks");
-        setTasks(response.data);
+        setTasks(Array.isArray(response.data) ? response.data : []);
       } catch (error) {
         console.error("Failed to fetch tasks:", error);
-
-        const mockTasks: Task[] = [
-          {
-            id: 1,
-            title: "Design Homepage Layout",
-            description:
-              "Create wireframes and mockups for the new homepage design",
-            status: "TODO",
-            priority: "HIGH",
-            dueDate: new Date(Date.now() + 86400000 * 3).toISOString(),
-            assignedUser: {
-              id: 1,
-              username: "johndoe",
-              firstName: "John",
-              lastName: "Doe",
-            },
-            project: {
-              id: 1,
-              name: "Website Redesign",
-            },
-          },
-          {
-            id: 2,
-            title: "Implement User Authentication",
-            description: "Set up JWT-based authentication system",
-            status: "IN_PROGRESS",
-            priority: "HIGH",
-            assignedUser: {
-              id: 2,
-              username: "janedoe",
-              firstName: "Jane",
-              lastName: "Doe",
-            },
-            project: {
-              id: 2,
-              name: "Mobile App Development",
-            },
-          },
-          {
-            id: 3,
-            title: "Write Unit Tests",
-            description:
-              "Create comprehensive test suite for core functionality",
-            status: "DONE",
-            priority: "MEDIUM",
-            assignedUser: {
-              id: 3,
-              username: "mikejohnson",
-              firstName: "Mike",
-              lastName: "Johnson",
-            },
-            project: {
-              id: 1,
-              name: "Website Redesign",
-            },
-          },
-        ];
-        setTasks(mockTasks);
+        setTasks(MOCK_TASKS);
+        setError("Failed to load tasks. Showing demo data.");
         toast({
           title: "Demo Mode",
           description: "Using mock data - connect to your backend API",
@@ -193,33 +128,37 @@ export default function TasksPage() {
 
     const { draggableId, destination } = result;
     const taskId = Number.parseInt(draggableId);
-    const newStatus = destination.droppableId as
-      | "TODO"
-      | "IN_PROGRESS"
-      | "DONE";
+    const newStatus = destination.droppableId as "TODO" | "IN_PROGRESS" | "DONE";
 
+    // Optimistic update
     setTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task.id === taskId ? { ...task, status: newStatus } : task
-      )
+      Array.isArray(prevTasks)
+        ? prevTasks.map((task) =>
+            task.id === taskId ? { ...task, status: newStatus } : task
+          )
+        : prevTasks
     );
 
     try {
       await api.patch(`/tasks/${taskId}`, { status: newStatus });
       toast({
-        title: "Task updated",
+        title: "Task Updated",
         description: "Task status has been updated successfully",
       });
     } catch (error) {
+      console.error("Failed to update task status:", error);
       setTasks((prevTasks) =>
-        prevTasks.map((task) =>
-          task.id === taskId
-            ? {
-                ...task,
-                status: tasks.find((t) => t.id === taskId)?.status || "TODO",
-              }
-            : task
-        )
+        Array.isArray(prevTasks)
+          ? prevTasks.map((task) =>
+              task.id === taskId
+                ? {
+                    ...task,
+                    status:
+                      prevTasks.find((t) => t.id === taskId)?.status || "TODO",
+                  }
+                : task
+            )
+          : prevTasks
       );
       toast({
         title: "Error",
@@ -243,7 +182,7 @@ export default function TasksPage() {
   };
 
   const getTasksByStatus = (status: keyof typeof statusColumns) => {
-    return tasks.filter((task) => task.status === status);
+    return Array.isArray(tasks) ? tasks.filter((task) => task.status === status) : [];
   };
 
   if (loading) {
@@ -252,7 +191,7 @@ export default function TasksPage() {
         <div className="space-y-6">
           <div className="flex justify-between items-center">
             <h1 className="text-3xl font-bold tracking-tight">Tasks</h1>
-            <Button>
+            <Button aria-label="Create new task">
               <Plus className="mr-2 h-4 w-4" />
               New Task
             </Button>
@@ -278,17 +217,32 @@ export default function TasksPage() {
     );
   }
 
+  if (error) {
+    return (
+      <DashboardLayout>
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h1 className="text-3xl font-bold tracking-tight">Tasks</h1>
+            <Button aria-label="Create new task">
+              <Plus className="mr-2 h-4 w-4" />
+              New Task
+            </Button>
+          </div>
+          <p className="text-red-500">{error}</p>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Tasks</h1>
-            <p className="text-muted-foreground">
-              Manage your tasks with a Kanban board
-            </p>
+            <p className="text-muted-foreground">Manage your tasks with a Kanban board</p>
           </div>
-          <Button>
+          <Button aria-label="Create new task">
             <Plus className="mr-2 h-4 w-4" />
             New Task
           </Button>
@@ -297,15 +251,12 @@ export default function TasksPage() {
         <DragDropContext onDragEnd={handleDragEnd}>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {Object.entries(statusColumns).map(([status, config]) => (
-              <Card key={status} className={config.color}>
+              <Card key={status} className={config.color} role="region" aria-label={`${config.title} tasks`}>
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
                     {config.title}
                     <Badge variant="secondary">
-                      {
-                        getTasksByStatus(status as keyof typeof statusColumns)
-                          .length
-                      }
+                      {getTasksByStatus(status as keyof typeof statusColumns).length}
                     </Badge>
                   </CardTitle>
                 </CardHeader>
@@ -316,84 +267,52 @@ export default function TasksPage() {
                         ref={provided.innerRef}
                         {...provided.droppableProps}
                         className={`space-y-3 min-h-[200px] ${
-                          snapshot.isDraggingOver
-                            ? "bg-muted/50 rounded-lg p-2"
-                            : ""
+                          snapshot.isDraggingOver ? "bg-muted/50 rounded-lg p-2" : ""
                         }`}
+                        aria-label={`${config.title} droppable area`}
                       >
-                        {getTasksByStatus(
-                          status as keyof typeof statusColumns
-                        ).map((task, index) => (
-                          <Draggable
-                            key={task.id}
-                            draggableId={task.id.toString()}
-                            index={index}
-                          >
+                        {getTasksByStatus(status as keyof typeof statusColumns).map((task, index) => (
+                          <Draggable key={task.id} draggableId={task.id.toString()} index={index}>
                             {(provided, snapshot) => (
                               <Card
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
-                                className={`cursor-move ${
-                                  snapshot.isDragging
-                                    ? "shadow-lg rotate-3"
-                                    : ""
-                                }`}
+                                className={`cursor-move ${snapshot.isDragging ? "shadow-lg rotate-3" : ""}`}
+                                role="article"
+                                aria-label={`Task: ${task.title}`}
                               >
                                 <CardContent className="p-4">
                                   <div className="space-y-3">
                                     <div className="flex items-start justify-between">
-                                      <h3 className="font-medium text-sm leading-tight">
-                                        {task.title}
-                                      </h3>
-                                      <Badge
-                                        className={getPriorityColor(
-                                          task.priority
-                                        )}
-                                      >
-                                        {task.priority}
-                                      </Badge>
+                                      <h3 className="font-medium text-sm leading-tight">{task.title}</h3>
+                                      <Badge className={getPriorityColor(task.priority)}>{task.priority}</Badge>
                                     </div>
-
                                     {task.description && (
-                                      <p className="text-xs text-muted-foreground line-clamp-2">
-                                        {task.description}
-                                      </p>
+                                      <p className="text-xs text-muted-foreground line-clamp-2">{task.description}</p>
                                     )}
-
                                     <div className="flex items-center justify-between text-xs text-muted-foreground">
-                                      <span className="font-medium">
-                                        {task.project.name}
-                                      </span>
+                                      <span className="font-medium">{task.project.name}</span>
                                       {task.dueDate && (
                                         <div className="flex items-center">
                                           <Calendar className="mr-1 h-3 w-3" />
-                                          {new Date(
-                                            task.dueDate
-                                          ).toLocaleDateString()}
+                                          <span>{new Date(task.dueDate).toLocaleDateString()}</span>
                                         </div>
                                       )}
                                     </div>
-
                                     {task.assignedUser && (
                                       <div className="flex items-center space-x-2">
                                         <Avatar className="h-6 w-6">
-                                          <AvatarImage
-                                            src={
-                                              task.assignedUser.avatar ||
-                                              "/placeholder.svg"
-                                            }
-                                          />
-                                          <AvatarFallback className="text-xs">
-                                            {task.assignedUser.firstName?.[0]}
-                                            {task.assignedUser.lastName?.[0]} ||
-                                            {task.assignedUser.username[0].toUpperCase()}
+                                          <AvatarImage src={task.assignedUser.avatar || "/placeholder.svg"} />
+                                          <AvatarFallback>
+                                            {(task.assignedUser.firstName?.[0] || task.assignedUser.username[0]).toUpperCase()}
+                                            {(task.assignedUser.lastName?.[0] || "").toUpperCase()}
                                           </AvatarFallback>
                                         </Avatar>
                                         <span className="text-xs text-muted-foreground">
-                                          {task.assignedUser.firstName}{" "}
-                                          {task.assignedUser.lastName} ||
-                                          {task.assignedUser.username}
+                                          {task.assignedUser.firstName || task.assignedUser.lastName
+                                            ? `${task.assignedUser.firstName || ""} ${task.assignedUser.lastName || ""}`.trim()
+                                            : task.assignedUser.username}
                                         </span>
                                       </div>
                                     )}
@@ -416,7 +335,7 @@ export default function TasksPage() {
         {tasks.length === 0 && (
           <div className="text-center py-12">
             <div className="mx-auto h-12 w-12 text-muted-foreground">
-              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -425,14 +344,10 @@ export default function TasksPage() {
                 />
               </svg>
             </div>
-            <h3 className="mt-2 text-sm font-semibold text-foreground">
-              No tasks
-            </h3>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Get started by creating a new task.
-            </p>
+            <h3 className="mt-2 text-sm font-semibold text-foreground">No tasks</h3>
+            <p className="mt-1 text-sm text-muted-foreground">Get started by creating a new task.</p>
             <div className="mt-6">
-              <Button>
+              <Button aria-label="Create new task">
                 <Plus className="mr-2 h-4 w-4" />
                 New Task
               </Button>
