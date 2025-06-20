@@ -346,13 +346,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { api } from "@/lib/api";
-import { useAuth } from "@/contexts/auth-context";
-import { FolderOpen, CheckSquare, AlertTriangle, Clock } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { useAuth } from "@/contexts/auth-context";
+import { api } from "@/lib/api";
+import { CheckSquare, AlertTriangle, Clock } from "lucide-react";
 
-// ✅ import external card
+// ✅ External cards
 import TotalUsersCard from "@/components/cards/TotalUsersCard";
+import TotalProjectsCard from "@/components/cards/TotalProjectsCard";
 
 interface DashboardStats {
   totalUsers: number;
@@ -389,43 +390,39 @@ export default function DashboardPage() {
         const tasksCountRes = await api.get("/tasks/count");
         const taskCount = tasksCountRes.data.total;
 
-        let baseStats: DashboardStats = {
-          totalUsers: 0,
-          totalProjects: 8,
-          totalTasks: taskCount,
-          totalViolations: 3,
-          tasksByStatus: {
-            TODO: 8,
-            IN_PROGRESS: 10,
-            DONE: 6,
-          },
-          recentActivity: [
-            {
-              id: 1,
-              type: "task_completed",
-              description: "Task 'Update user interface' was completed",
-              createdAt: new Date().toISOString(),
-            },
-            {
-              id: 2,
-              type: "project_created",
-              description: "New project 'Mobile App' was created",
-              createdAt: new Date(Date.now() - 86400000).toISOString(),
-            },
-            {
-              id: 3,
-              type: "user_assigned",
-              description: "John Doe was assigned to 'Website Redesign'",
-              createdAt: new Date(Date.now() - 172800000).toISOString(),
-            },
-          ],
-        };
-
         if (token === "demo-token") {
           const res = await api.get("/users/count");
-          baseStats.totalUsers = res.data.total;
-          setStats(baseStats);
-          setLoading(false);
+          setStats({
+            totalUsers: res.data.total,
+            totalProjects: 8,
+            totalTasks: taskCount,
+            totalViolations: 3,
+            tasksByStatus: {
+              TODO: 8,
+              IN_PROGRESS: 10,
+              DONE: 6,
+            },
+            recentActivity: [
+              {
+                id: 1,
+                type: "task_completed",
+                description: "Task 'Update user interface' was completed",
+                createdAt: new Date().toISOString(),
+              },
+              {
+                id: 2,
+                type: "project_created",
+                description: "New project 'Mobile App' was created",
+                createdAt: new Date(Date.now() - 86400000).toISOString(),
+              },
+              {
+                id: 3,
+                type: "user_assigned",
+                description: "John Doe was assigned to 'Website Redesign'",
+                createdAt: new Date(Date.now() - 172800000).toISOString(),
+              },
+            ],
+          });
           return;
         }
 
@@ -444,14 +441,14 @@ export default function DashboardPage() {
       } catch (error) {
         console.error("Failed to fetch dashboard stats:", error);
         setStats({
-          totalUsers: 12,
-          totalProjects: 8,
-          totalTasks: 24,
-          totalViolations: 3,
+          totalUsers: 0,
+          totalProjects: 0,
+          totalTasks: 0,
+          totalViolations: 0,
           tasksByStatus: {
-            TODO: 8,
-            IN_PROGRESS: 10,
-            DONE: 6,
+            TODO: 0,
+            IN_PROGRESS: 0,
+            DONE: 0,
           },
           recentActivity: [],
         });
@@ -468,21 +465,19 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <DashboardLayout>
-        <div className="space-y-6">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {[...Array(4)].map((_, i) => (
-              <Card key={i}>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <div className="h-4 bg-muted rounded w-20 animate-pulse" />
-                  <div className="h-4 w-4 bg-muted rounded animate-pulse" />
-                </CardHeader>
-                <CardContent>
-                  <div className="h-8 bg-muted rounded w-16 animate-pulse mb-2" />
-                  <div className="h-3 bg-muted rounded w-24 animate-pulse" />
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {[...Array(4)].map((_, i) => (
+            <Card key={i}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <div className="h-4 bg-muted rounded w-20 animate-pulse" />
+                <div className="h-4 w-4 bg-muted rounded animate-pulse" />
+              </CardHeader>
+              <CardContent>
+                <div className="h-8 bg-muted rounded w-16 animate-pulse mb-2" />
+                <div className="h-3 bg-muted rounded w-24 animate-pulse" />
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </DashboardLayout>
     );
@@ -508,21 +503,11 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        {/* Stat Cards */}
+        {/* 🔢 Stat Cards */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <TotalUsersCard />
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Projects</CardTitle>
-              <FolderOpen className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {stats?.totalProjects || 0}
-              </div>
-              <p className="text-xs text-muted-foreground">Active projects</p>
-            </CardContent>
-          </Card>
+          <TotalProjectsCard />
+
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Tasks</CardTitle>
@@ -533,6 +518,7 @@ export default function DashboardPage() {
               <p className="text-xs text-muted-foreground">All Tasks</p>
             </CardContent>
           </Card>
+
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Violations</CardTitle>
@@ -547,7 +533,7 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-        {/* ➕ Task Progress & Recent Activity */}
+        {/* 📊 Task Progress & 🕓 Recent Activity */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
           <Card className="col-span-4">
             <CardHeader>
