@@ -65,7 +65,6 @@
   overflow: hidden;
 }
 
-/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -83,7 +82,6 @@
   background: hsl(var(--muted-foreground) / 0.5);
 }
 
-/* Smooth transitions */
 * {
   transition-property: color, background-color, border-color,
     text-decoration-color, fill, stroke;
