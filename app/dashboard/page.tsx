@@ -354,6 +354,7 @@ import { CheckSquare, AlertTriangle, Clock } from "lucide-react";
 // ✅ External cards
 import TotalUsersCard from "@/components/cards/TotalUsersCard";
 import TotalProjectsCard from "@/components/cards/TotalProjectsCard";
+import TotalTasksCard from "@/components/cards/TotalTasksCard";
 
 interface DashboardStats {
   totalUsers: number;
@@ -504,34 +505,24 @@ export default function DashboardPage() {
         </div>
 
         {/* 🔢 Stat Cards */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <TotalUsersCard />
-          <TotalProjectsCard />
+       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+  <TotalUsersCard />
+  <TotalProjectsCard />
+  <TotalTasksCard />
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Tasks</CardTitle>
-              <CheckSquare className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats?.totalTasks || 0}</div>
-              <p className="text-xs text-muted-foreground">All Tasks</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Violations</CardTitle>
-              <AlertTriangle className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {stats?.totalViolations || 0}
-              </div>
-              <p className="text-xs text-muted-foreground">This month</p>
-            </CardContent>
-          </Card>
-        </div>
+  <Card>
+    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <CardTitle className="text-sm font-medium">Violations</CardTitle>
+      <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+    </CardHeader>
+    <CardContent>
+      <div className="text-2xl font-bold">
+        {stats?.totalViolations || 0}
+      </div>
+      <p className="text-xs text-muted-foreground">This month</p>
+    </CardContent>
+  </Card>
+</div>
 
         {/* 📊 Task Progress & 🕓 Recent Activity */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
