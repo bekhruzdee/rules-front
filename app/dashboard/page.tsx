@@ -9,53 +9,16 @@
 //   CardHeader,
 //   CardTitle,
 // } from "@/components/ui/card";
-// import { api } from "@/lib/api";
-// import { useAuth } from "@/contexts/auth-context";
-// import {
-//   Users,
-//   FolderOpen,
-//   CheckSquare,
-//   AlertTriangle,
-//   Clock,
-// } from "lucide-react";
 // import { Progress } from "@/components/ui/progress";
+// import { useAuth } from "@/contexts/auth-context";
+// import { api } from "@/lib/api";
+// import { CheckSquare, AlertTriangle, Clock } from "lucide-react";
 
-// // 👇 TotalUsersCard ichki komponent
-// function TotalUsersCard() {
-//   const [total, setTotal] = useState<number>(0);
-//   const [loading, setLoading] = useState<boolean>(true);
+// // ✅ External cards
+// import TotalUsersCard from "@/components/cards/TotalUsersCard";
+// import TotalProjectsCard from "@/components/cards/TotalProjectsCard";
+// import TotalTasksCard from "@/components/cards/TotalTasksCard";
 
-//   useEffect(() => {
-//     const fetchTotalUsers = async () => {
-//       try {
-//         const res = await api.get("/users/count");
-//         setTotal(res.data.total || 0);
-//       } catch (error) {
-//         console.error("Failed to fetch user count:", error);
-//         setTotal(0);
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchTotalUsers();
-//   }, []);
-
-//   return (
-//     <Card>
-//       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-//         <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-//         <Users className="h-4 w-4 text-muted-foreground" />
-//       </CardHeader>
-//       <CardContent>
-//         <div className="text-2xl font-bold">{loading ? "..." : total}</div>
-//         <p className="text-xs text-muted-foreground">Registered team members</p>
-//       </CardContent>
-//     </Card>
-//   );
-// }
-
-// // 👇 DashboardPage asosiy sahifa
 // interface DashboardStats {
 //   totalUsers: number;
 //   totalProjects: number;
@@ -88,47 +51,42 @@
 //     const fetchStats = async () => {
 //       try {
 //         const token = localStorage.getItem("token");
-
 //         const tasksCountRes = await api.get("/tasks/count");
 //         const taskCount = tasksCountRes.data.total;
 
-//         let baseStats: DashboardStats = {
-//           totalUsers: 0,
-//           totalProjects: 8,
-//           totalTasks: taskCount,
-//           totalViolations: 3,
-//           tasksByStatus: {
-//             TODO: 8,
-//             IN_PROGRESS: 10,
-//             DONE: 6,
-//           },
-//           recentActivity: [
-//             {
-//               id: 1,
-//               type: "task_completed",
-//               description: "Task 'Update user interface' was completed",
-//               createdAt: new Date().toISOString(),
-//             },
-//             {
-//               id: 2,
-//               type: "project_created",
-//               description: "New project 'Mobile App' was created",
-//               createdAt: new Date(Date.now() - 86400000).toISOString(),
-//             },
-//             {
-//               id: 3,
-//               type: "user_assigned",
-//               description: "John Doe was assigned to 'Website Redesign'",
-//               createdAt: new Date(Date.now() - 172800000).toISOString(),
-//             },
-//           ],
-//         };
-
 //         if (token === "demo-token") {
 //           const res = await api.get("/users/count");
-//           baseStats.totalUsers = res.data.total;
-//           setStats(baseStats);
-//           setLoading(false);
+//           setStats({
+//             totalUsers: res.data.total,
+//             totalProjects: 8,
+//             totalTasks: taskCount,
+//             totalViolations: 3,
+//             tasksByStatus: {
+//               TODO: 8,
+//               IN_PROGRESS: 10,
+//               DONE: 6,
+//             },
+//             recentActivity: [
+//               {
+//                 id: 1,
+//                 type: "task_completed",
+//                 description: "Task 'Update user interface' was completed",
+//                 createdAt: new Date().toISOString(),
+//               },
+//               {
+//                 id: 2,
+//                 type: "project_created",
+//                 description: "New project 'Mobile App' was created",
+//                 createdAt: new Date(Date.now() - 86400000).toISOString(),
+//               },
+//               {
+//                 id: 3,
+//                 type: "user_assigned",
+//                 description: "John Doe was assigned to 'Website Redesign'",
+//                 createdAt: new Date(Date.now() - 172800000).toISOString(),
+//               },
+//             ],
+//           });
 //           return;
 //         }
 
@@ -147,14 +105,14 @@
 //       } catch (error) {
 //         console.error("Failed to fetch dashboard stats:", error);
 //         setStats({
-//           totalUsers: 12,
-//           totalProjects: 8,
-//           totalTasks: 24,
-//           totalViolations: 3,
+//           totalUsers: 0,
+//           totalProjects: 0,
+//           totalTasks: 0,
+//           totalViolations: 0,
 //           tasksByStatus: {
-//             TODO: 8,
-//             IN_PROGRESS: 10,
-//             DONE: 6,
+//             TODO: 0,
+//             IN_PROGRESS: 0,
+//             DONE: 0,
 //           },
 //           recentActivity: [],
 //         });
@@ -171,21 +129,19 @@
 //   if (loading) {
 //     return (
 //       <DashboardLayout>
-//         <div className="space-y-6">
-//           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-//             {[...Array(4)].map((_, i) => (
-//               <Card key={i}>
-//                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-//                   <div className="h-4 bg-muted rounded w-20 animate-pulse" />
-//                   <div className="h-4 w-4 bg-muted rounded animate-pulse" />
-//                 </CardHeader>
-//                 <CardContent>
-//                   <div className="h-8 bg-muted rounded w-16 animate-pulse mb-2" />
-//                   <div className="h-3 bg-muted rounded w-24 animate-pulse" />
-//                 </CardContent>
-//               </Card>
-//             ))}
-//           </div>
+//         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+//           {[...Array(4)].map((_, i) => (
+//             <Card key={i}>
+//               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+//                 <div className="h-4 bg-muted rounded w-20 animate-pulse" />
+//                 <div className="h-4 w-4 bg-muted rounded animate-pulse" />
+//               </CardHeader>
+//               <CardContent>
+//                 <div className="h-8 bg-muted rounded w-16 animate-pulse mb-2" />
+//                 <div className="h-3 bg-muted rounded w-24 animate-pulse" />
+//               </CardContent>
+//             </Card>
+//           ))}
 //         </div>
 //       </DashboardLayout>
 //     );
@@ -211,32 +167,11 @@
 //           </p>
 //         </div>
 
+//         {/* 🔢 Stat Cards */}
 //         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
 //           <TotalUsersCard />
-
-//           <Card>
-//             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-//               <CardTitle className="text-sm font-medium">Projects</CardTitle>
-//               <FolderOpen className="h-4 w-4 text-muted-foreground" />
-//             </CardHeader>
-//             <CardContent>
-//               <div className="text-2xl font-bold">
-//                 {stats?.totalProjects || 0}
-//               </div>
-//               <p className="text-xs text-muted-foreground">Active projects</p>
-//             </CardContent>
-//           </Card>
-
-//           <Card>
-//             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-//               <CardTitle className="text-sm font-medium">Tasks</CardTitle>
-//               <CheckSquare className="h-4 w-4 text-muted-foreground" />
-//             </CardHeader>
-//             <CardContent>
-//               <div className="text-2xl font-bold">{stats?.totalTasks || 0}</div>
-//               <p className="text-xs text-muted-foreground">All Tasks</p>
-//             </CardContent>
-//           </Card>
+//           <TotalProjectsCard />
+//           <TotalTasksCard />
 
 //           <Card>
 //             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -252,6 +187,7 @@
 //           </Card>
 //         </div>
 
+//         {/* 📊 Task Progress & 🕓 Recent Activity */}
 //         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
 //           <Card className="col-span-4">
 //             <CardHeader>
@@ -309,13 +245,9 @@
 //                       key={activity.id}
 //                       className="flex items-start space-x-3"
 //                     >
-//                       <div className="flex-shrink-0">
-//                         <Clock className="h-4 w-4 text-muted-foreground mt-0.5" />
-//                       </div>
-//                       <div className="flex-1 min-w-0">
-//                         <p className="text-sm text-foreground">
-//                           {activity.description}
-//                         </p>
+//                       <Clock className="h-4 w-4 text-muted-foreground mt-0.5" />
+//                       <div>
+//                         <p className="text-sm">{activity.description}</p>
 //                         <p className="text-xs text-muted-foreground">
 //                           {new Date(activity.createdAt).toLocaleDateString()}
 //                         </p>
@@ -335,6 +267,7 @@
 //     </DashboardLayout>
 //   );
 // }
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -355,12 +288,12 @@ import { CheckSquare, AlertTriangle, Clock } from "lucide-react";
 import TotalUsersCard from "@/components/cards/TotalUsersCard";
 import TotalProjectsCard from "@/components/cards/TotalProjectsCard";
 import TotalTasksCard from "@/components/cards/TotalTasksCard";
+import TotalViolationsCard from "@/components/cards/TotalViolationsCard"; // ✅ import card
 
 interface DashboardStats {
   totalUsers: number;
   totalProjects: number;
   totalTasks: number;
-  totalViolations: number;
   tasksByStatus: {
     TODO: number;
     IN_PROGRESS: number;
@@ -397,7 +330,6 @@ export default function DashboardPage() {
             totalUsers: res.data.total,
             totalProjects: 8,
             totalTasks: taskCount,
-            totalViolations: 3,
             tasksByStatus: {
               TODO: 8,
               IN_PROGRESS: 10,
@@ -445,7 +377,6 @@ export default function DashboardPage() {
           totalUsers: 0,
           totalProjects: 0,
           totalTasks: 0,
-          totalViolations: 0,
           tasksByStatus: {
             TODO: 0,
             IN_PROGRESS: 0,
@@ -505,24 +436,12 @@ export default function DashboardPage() {
         </div>
 
         {/* 🔢 Stat Cards */}
-       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-  <TotalUsersCard />
-  <TotalProjectsCard />
-  <TotalTasksCard />
-
-  <Card>
-    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-      <CardTitle className="text-sm font-medium">Violations</CardTitle>
-      <AlertTriangle className="h-4 w-4 text-muted-foreground" />
-    </CardHeader>
-    <CardContent>
-      <div className="text-2xl font-bold">
-        {stats?.totalViolations || 0}
-      </div>
-      <p className="text-xs text-muted-foreground">This month</p>
-    </CardContent>
-  </Card>
-</div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <TotalUsersCard />
+          <TotalProjectsCard />
+          <TotalTasksCard />
+          <TotalViolationsCard />
+        </div>
 
         {/* 📊 Task Progress & 🕓 Recent Activity */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
