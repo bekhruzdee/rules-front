@@ -1,46 +1,63 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { X, UserIcon } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Checkbox } from "@/components/ui/checkbox"
+import { useState } from "react";
+import { X, UserIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface User {
-  id: string
-  name: string
-  email: string
+  id: string;
+  name: string;
+  email: string;
 }
 
 interface Project {
-  id: string
-  name: string
-  description: string
-  imagePath: string
-  users: User[]
+  id: string;
+  name: string;
+  description: string;
+  imagePath: string;
+  users: User[];
 }
 
 interface TaskFormProps {
-  users: User[]
-  projects: Project[]
-  onSubmit: (data: any) => void
-  onCancel: () => void
+  users: User[];
+  projects: Project[];
+  onSubmit: (data: any) => void;
+  onCancel: () => void;
 }
 
 const statusOptions = [
   { value: "TODO", label: "To Do" },
   { value: "IN_PROGRESS", label: "In Progress" },
   { value: "DONE", label: "Done" },
-]
+];
 
-export function TaskForm({ users, projects, onSubmit, onCancel }: TaskFormProps) {
+export function TaskForm({
+  users,
+  projects,
+  onSubmit,
+  onCancel,
+}: TaskFormProps) {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -48,19 +65,21 @@ export function TaskForm({ users, projects, onSubmit, onCancel }: TaskFormProps)
     completed: false,
     projectId: "",
     assignedUsers: [] as string[],
-  })
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    const selectedProject = projects.find((p) => p.id === formData.projectId)
-    const assignedUserObjects = users.filter((user) => formData.assignedUsers.includes(user.id))
+    e.preventDefault();
+    const selectedProject = projects.find((p) => p.id === formData.projectId);
+    const assignedUserObjects = users.filter((user) =>
+      formData.assignedUsers.includes(user.id)
+    );
 
     onSubmit({
       ...formData,
       project: selectedProject,
       assignedUsers: assignedUserObjects,
-    })
-  }
+    });
+  };
 
   const handleUserToggle = (userId: string) => {
     setFormData((prev) => ({
@@ -68,8 +87,8 @@ export function TaskForm({ users, projects, onSubmit, onCancel }: TaskFormProps)
       assignedUsers: prev.assignedUsers.includes(userId)
         ? prev.assignedUsers.filter((id) => id !== userId)
         : [...prev.assignedUsers, userId],
-    }))
-  }
+    }));
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -77,7 +96,9 @@ export function TaskForm({ users, projects, onSubmit, onCancel }: TaskFormProps)
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle>Create New Task</CardTitle>
-            <CardDescription>Add a new task and assign it to team members</CardDescription>
+            <CardDescription>
+              Add a new task and assign it to team members
+            </CardDescription>
           </div>
           <Button variant="ghost" size="sm" onClick={onCancel}>
             <X className="h-4 w-4" />
@@ -91,7 +112,9 @@ export function TaskForm({ users, projects, onSubmit, onCancel }: TaskFormProps)
               <Input
                 id="title"
                 value={formData.title}
-                onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, title: e.target.value }))
+                }
                 placeholder="Enter task title"
                 required
               />
@@ -103,7 +126,12 @@ export function TaskForm({ users, projects, onSubmit, onCancel }: TaskFormProps)
               <Textarea
                 id="description"
                 value={formData.description}
-                onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
                 placeholder="Describe what needs to be done"
                 rows={3}
                 required
@@ -115,7 +143,9 @@ export function TaskForm({ users, projects, onSubmit, onCancel }: TaskFormProps)
               <Label>Project *</Label>
               <Select
                 value={formData.projectId}
-                onValueChange={(value) => setFormData((prev) => ({ ...prev, projectId: value }))}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, projectId: value }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a project" />
@@ -125,7 +155,9 @@ export function TaskForm({ users, projects, onSubmit, onCancel }: TaskFormProps)
                     <SelectItem key={project.id} value={project.id}>
                       <div>
                         <p className="font-medium">{project.name}</p>
-                        <p className="text-sm text-gray-500 truncate">{project.description}</p>
+                        <p className="text-sm text-gray-500 truncate">
+                          {project.description}
+                        </p>
                       </div>
                     </SelectItem>
                   ))}
@@ -138,7 +170,9 @@ export function TaskForm({ users, projects, onSubmit, onCancel }: TaskFormProps)
               <Label>Status</Label>
               <Select
                 value={formData.status}
-                onValueChange={(value) => setFormData((prev) => ({ ...prev, status: value }))}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, status: value }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -158,7 +192,9 @@ export function TaskForm({ users, projects, onSubmit, onCancel }: TaskFormProps)
               <Checkbox
                 id="completed"
                 checked={formData.completed}
-                onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, completed: !!checked }))}
+                onCheckedChange={(checked) =>
+                  setFormData((prev) => ({ ...prev, completed: !!checked }))
+                }
               />
               <Label htmlFor="completed">Mark as completed</Label>
             </div>
@@ -168,7 +204,10 @@ export function TaskForm({ users, projects, onSubmit, onCancel }: TaskFormProps)
               <Label>Assign to Team Members</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {users.map((user) => (
-                  <div key={user.id} className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50">
+                  <div
+                    key={user.id}
+                    className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50"
+                  >
                     <Checkbox
                       id={`task-user-${user.id}`}
                       checked={formData.assignedUsers.includes(user.id)}
@@ -193,12 +232,12 @@ export function TaskForm({ users, projects, onSubmit, onCancel }: TaskFormProps)
                   <Label className="text-sm">Assigned to:</Label>
                   <div className="flex flex-wrap gap-2">
                     {formData.assignedUsers.map((userId) => {
-                      const user = users.find((u) => u.id === userId)
+                      const user = users.find((u) => u.id === userId);
                       return user ? (
                         <Badge key={userId} variant="secondary">
                           {user.name}
                         </Badge>
-                      ) : null
+                      ) : null;
                     })}
                   </div>
                 </div>
@@ -210,7 +249,14 @@ export function TaskForm({ users, projects, onSubmit, onCancel }: TaskFormProps)
               <Button type="button" variant="outline" onClick={onCancel}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={!formData.title || !formData.description || !formData.projectId}>
+              <Button
+                type="submit"
+                disabled={
+                  !formData.title ||
+                  !formData.description ||
+                  !formData.projectId
+                }
+              >
                 Create Task
               </Button>
             </div>
@@ -218,5 +264,5 @@ export function TaskForm({ users, projects, onSubmit, onCancel }: TaskFormProps)
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

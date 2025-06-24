@@ -45,9 +45,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const isAdmin = user?.role === "ADMIN";
   const isUser = user?.role === "USER";
 
-
-  
-
   useEffect(() => {
     const initializeAuth = async () => {
       try {
@@ -89,10 +86,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const response = await api.post("/auth/login", { username, password });
       console.log(response.data);
-      
-      const { access_token,  userData } = response.data;
+
+      const { access_token, userData } = response.data;
       console.log(userData);
-      
 
       localStorage.setItem("token", access_token);
       setUser(userData);
@@ -104,7 +100,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       router.replace("/dashboard");
     } catch (error: any) {
-      
       toast({
         title: "Login failed",
         description: error.response?.data?.message || "Invalid credentials",

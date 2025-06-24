@@ -1,41 +1,59 @@
-import { CheckCircle, Clock, AlertCircle, UserIcon } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { CheckCircle, Clock, AlertCircle, UserIcon } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 interface Project {
-  id: string
-  name: string
-  description: string
-  imagePath: string
-  users: { id: string; name: string; email: string }[]
+  id: string;
+  name: string;
+  description: string;
+  imagePath: string;
+  users: { id: string; name: string; email: string }[];
 }
 
 interface Task {
-  id: string
-  title: string
-  description: string
-  status: "TODO" | "IN_PROGRESS" | "DONE"
-  completed: boolean
-  project: Project
-  assignedUsers: { id: string; name: string; email: string }[]
+  id: string;
+  title: string;
+  description: string;
+  status: "TODO" | "IN_PROGRESS" | "DONE";
+  completed: boolean;
+  project: Project;
+  assignedUsers: { id: string; name: string; email: string }[];
 }
 
 interface TaskListProps {
-  tasks: Task[]
+  tasks: Task[];
 }
 
 const statusConfig = {
-  TODO: { icon: AlertCircle, color: "bg-yellow-100 text-yellow-800", label: "To Do" },
-  IN_PROGRESS: { icon: Clock, color: "bg-blue-100 text-blue-800", label: "In Progress" },
-  DONE: { icon: CheckCircle, color: "bg-green-100 text-green-800", label: "Done" },
-}
+  TODO: {
+    icon: AlertCircle,
+    color: "bg-yellow-100 text-yellow-800",
+    label: "To Do",
+  },
+  IN_PROGRESS: {
+    icon: Clock,
+    color: "bg-blue-100 text-blue-800",
+    label: "In Progress",
+  },
+  DONE: {
+    icon: CheckCircle,
+    color: "bg-green-100 text-green-800",
+    label: "Done",
+  },
+};
 
 export function TaskList({ tasks }: TaskListProps) {
   return (
     <div className="space-y-4">
       {tasks.map((task) => {
-        const StatusIcon = statusConfig[task.status].icon
+        const StatusIcon = statusConfig[task.status].icon;
         return (
           <Card key={task.id} className="hover:shadow-md transition-shadow">
             <CardHeader className="pb-3">
@@ -66,7 +84,10 @@ export function TaskList({ tasks }: TaskListProps) {
                   </div>
                   <div className="flex -space-x-2">
                     {task.assignedUsers.slice(0, 3).map((user) => (
-                      <Avatar key={user.id} className="w-6 h-6 border-2 border-white">
+                      <Avatar
+                        key={user.id}
+                        className="w-6 h-6 border-2 border-white"
+                      >
                         <AvatarFallback className="text-xs">
                           {user.name
                             .split(" ")
@@ -77,7 +98,9 @@ export function TaskList({ tasks }: TaskListProps) {
                     ))}
                     {task.assignedUsers.length > 3 && (
                       <div className="w-6 h-6 bg-gray-200 rounded-full border-2 border-white flex items-center justify-center">
-                        <span className="text-xs text-gray-600">+{task.assignedUsers.length - 3}</span>
+                        <span className="text-xs text-gray-600">
+                          +{task.assignedUsers.length - 3}
+                        </span>
                       </div>
                     )}
                   </div>
@@ -93,8 +116,8 @@ export function TaskList({ tasks }: TaskListProps) {
               </div>
             </CardContent>
           </Card>
-        )
+        );
       })}
     </div>
-  )
+  );
 }
