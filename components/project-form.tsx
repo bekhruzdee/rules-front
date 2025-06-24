@@ -102,6 +102,7 @@ export function ProjectForm({ users, onSubmit, onCancel }: ProjectFormProps) {
                 required
               />
             </div>
+
             {/* Description */}
             <div className="space-y-2">
               <Label htmlFor="description">Description *</Label>
@@ -119,7 +120,8 @@ export function ProjectForm({ users, onSubmit, onCancel }: ProjectFormProps) {
                 required
               />
             </div>
-            Image Upload
+
+            {/* Image Upload */}
             <div className="space-y-2">
               <Label htmlFor="imagePath">Project Image</Label>
               <div className="flex gap-2">
@@ -163,6 +165,7 @@ export function ProjectForm({ users, onSubmit, onCancel }: ProjectFormProps) {
                 />
               )}
             </div>
+
             {/* Team Members */}
             <div className="space-y-4">
               <Label>Assign Team Members</Label>
@@ -207,6 +210,7 @@ export function ProjectForm({ users, onSubmit, onCancel }: ProjectFormProps) {
                 </div>
               )}
             </div>
+
             {/* Form Actions */}
             <div className="flex justify-end space-x-3 pt-6 border-t">
               <Button type="button" variant="outline" onClick={onCancel}>
