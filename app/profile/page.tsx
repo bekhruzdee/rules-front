@@ -111,7 +111,7 @@ export default function ProfilePage() {
   return (
     <DashboardLayout>
       <div className="space-y-6 animate-in fade-in-50 duration-500">
-        {/* Header */}
+     
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
@@ -124,7 +124,7 @@ export default function ProfilePage() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {/* Personal Information Card */}
+          
           <Card className="md:col-span-2 lg:col-span-2 overflow-hidden">
             <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20">
               <div className="flex items-center justify-between">
@@ -267,7 +267,7 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
 
-          {/* Performance Overview */}
+          
           <Card className="hover:shadow-lg transition-shadow duration-300">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -313,7 +313,7 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
 
-          {/* Quick Stats Cards */}
+         
           <Card className="hover:shadow-lg transition-all duration-300 hover:scale-105">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-lg">
@@ -361,7 +361,7 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
 
-          {/* Recent Activity */}
+          
           <Card className="md:col-span-2 hover:shadow-lg transition-shadow duration-300">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -394,7 +394,7 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
 
-          {/* Achievement Badge */}
+         
           <Card className="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-950/20 dark:to-orange-950/20 border-yellow-200 dark:border-yellow-800 hover:shadow-lg transition-all duration-300 hover:scale-105">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-yellow-800 dark:text-yellow-200">

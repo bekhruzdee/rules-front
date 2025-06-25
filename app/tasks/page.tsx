@@ -59,7 +59,6 @@ const statusColumns = {
   DONE: { title: "Done", color: "bg-green-100 dark:bg-green-900" },
 };
 
-// Mock Data for Demo Mode
 const MOCK_USERS: User[] = [
   {
     id: 1,
@@ -247,7 +246,7 @@ export default function TasksPage() {
       await api.patch(`/tasks/${taskId}`, { status: newStatus });
       toast({ title: "Task status updated" });
     } catch (err: any) {
-      setTasks(tasks); // Revert optimistic update
+      setTasks(tasks); 
       toast({
         title: "Error updating task",
         description: err.message || "Failed to update task status",

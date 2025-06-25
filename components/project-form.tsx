@@ -299,7 +299,12 @@ export function ProjectForm({
       file,
     });
     if (!initialData) {
-      setFormData({ name: "", description: "", imagePath: "", selectedUsers: [] });
+      setFormData({
+        name: "",
+        description: "",
+        imagePath: "",
+        selectedUsers: [],
+      });
       setFile(null);
       setImagePreview(null);
     }
@@ -321,7 +326,7 @@ export function ProjectForm({
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
-        setFormData((prev) => ({ ...prev, imagePath: "" })); // Fayl tanlansa, URL ni tozalaymiz
+        setFormData((prev) => ({ ...prev, imagePath: "" }));
       };
       reader.readAsDataURL(selectedFile);
     }
@@ -347,7 +352,6 @@ export function ProjectForm({
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Name */}
             <div className="space-y-2">
               <Label htmlFor="name">Project Name *</Label>
               <Input
@@ -361,7 +365,6 @@ export function ProjectForm({
               />
             </div>
 
-            {/* Description */}
             <div className="space-y-2">
               <Label htmlFor="description">Description *</Label>
               <Textarea
@@ -379,7 +382,6 @@ export function ProjectForm({
               />
             </div>
 
-            {/* Image Upload + URL Input */}
             <div className="space-y-2">
               <Label htmlFor="imagePath">Project Image</Label>
               <div className="flex gap-2">
@@ -391,7 +393,7 @@ export function ProjectForm({
                       ...prev,
                       imagePath: e.target.value,
                     }));
-                    setFile(null); // Agar URL kiritilsa, faylni o‘chiramiz
+                    setFile(null);
                     setImagePreview(e.target.value || null);
                   }}
                   placeholder="Enter image URL"
@@ -427,7 +429,6 @@ export function ProjectForm({
               )}
             </div>
 
-            {/* Team Members */}
             <div className="space-y-4">
               <Label>Assign Team Members</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -454,7 +455,6 @@ export function ProjectForm({
                 ))}
               </div>
 
-              {/* Selected Users Preview */}
               {formData.selectedUsers.length > 0 && (
                 <div className="space-y-2">
                   <Label className="text-sm">Selected Members:</Label>
@@ -472,7 +472,6 @@ export function ProjectForm({
               )}
             </div>
 
-            {/* Buttons */}
             <div className="flex justify-end space-x-3 pt-6 border-t">
               <Button type="button" variant="outline" onClick={onCancel}>
                 Cancel

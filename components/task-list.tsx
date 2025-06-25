@@ -70,13 +70,12 @@ export function TaskList({ tasks }: TaskListProps) {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {/* Project */}
+              
                 <div className="flex items-center space-x-2">
                   <span className="text-sm text-gray-600">Project:</span>
                   <Badge variant="outline">{task.project.name}</Badge>
                 </div>
 
-                {/* Assigned Users */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <UserIcon className="h-4 w-4 text-gray-500" />
@@ -106,7 +105,7 @@ export function TaskList({ tasks }: TaskListProps) {
                   </div>
                 </div>
 
-                {/* Completion Status */}
+                
                 {task.completed && (
                   <div className="flex items-center space-x-2 text-green-600">
                     <CheckCircle className="h-4 w-4" />
