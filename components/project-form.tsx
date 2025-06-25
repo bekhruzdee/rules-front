@@ -269,8 +269,10 @@ export function ProjectForm({
   const [formData, setFormData] = useState({
     name: initialData?.name || "",
     description: initialData?.description || "",
+    imagePath: initialData?.imagePath || "",
     selectedUsers: initialData?.selectedUsers || [],
   });
+
   const [file, setFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(
     initialData?.imagePath || null
@@ -282,6 +284,7 @@ export function ProjectForm({
       setFormData({
         name: initialData.name,
         description: initialData.description,
+        imagePath: initialData.imagePath || "",
         selectedUsers: initialData.selectedUsers,
       });
       setImagePreview(initialData.imagePath || null);
@@ -296,7 +299,7 @@ export function ProjectForm({
       file,
     });
     if (!initialData) {
-      setFormData({ name: "", description: "", selectedUsers: [] });
+      setFormData({ name: "", description: "", imagePath: "", selectedUsers: [] });
       setFile(null);
       setImagePreview(null);
     }
@@ -318,6 +321,7 @@ export function ProjectForm({
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
+        setFormData((prev) => ({ ...prev, imagePath: "" })); // Fayl tanlansa, URL ni tozalaymiz
       };
       reader.readAsDataURL(selectedFile);
     }
@@ -343,6 +347,7 @@ export function ProjectForm({
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Name */}
             <div className="space-y-2">
               <Label htmlFor="name">Project Name *</Label>
               <Input
@@ -356,6 +361,7 @@ export function ProjectForm({
               />
             </div>
 
+            {/* Description */}
             <div className="space-y-2">
               <Label htmlFor="description">Description *</Label>
               <Textarea
@@ -373,9 +379,23 @@ export function ProjectForm({
               />
             </div>
 
+            {/* Image Upload + URL Input */}
             <div className="space-y-2">
-              <Label htmlFor="file">Project Image</Label>
+              <Label htmlFor="imagePath">Project Image</Label>
               <div className="flex gap-2">
+                <Input
+                  id="imagePath"
+                  value={formData.imagePath}
+                  onChange={(e) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      imagePath: e.target.value,
+                    }));
+                    setFile(null); // Agar URL kiritilsa, faylni o‘chiramiz
+                    setImagePreview(e.target.value || null);
+                  }}
+                  placeholder="Enter image URL"
+                />
                 <Button
                   type="button"
                   variant="outline"
@@ -383,7 +403,7 @@ export function ProjectForm({
                   onClick={() => fileInputRef.current?.click()}
                 >
                   <Upload className="h-4 w-4 mr-2" />
-                  Upload Image
+                  Upload
                 </Button>
                 <Input
                   type="file"
@@ -395,17 +415,19 @@ export function ProjectForm({
                 />
               </div>
               <p className="text-sm text-gray-500">
-                Optional: Add a project cover image
+                You can provide an image URL or upload an image file.
               </p>
               {imagePreview && (
                 <img
                   src={imagePreview}
                   alt="Project preview"
                   className="mt-2 rounded max-h-40 object-cover"
+                  onError={(e) => (e.currentTarget.src = "/placeholder.svg")}
                 />
               )}
             </div>
 
+            {/* Team Members */}
             <div className="space-y-4">
               <Label>Assign Team Members</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -432,6 +454,7 @@ export function ProjectForm({
                 ))}
               </div>
 
+              {/* Selected Users Preview */}
               {formData.selectedUsers.length > 0 && (
                 <div className="space-y-2">
                   <Label className="text-sm">Selected Members:</Label>
@@ -449,6 +472,7 @@ export function ProjectForm({
               )}
             </div>
 
+            {/* Buttons */}
             <div className="flex justify-end space-x-3 pt-6 border-t">
               <Button type="button" variant="outline" onClick={onCancel}>
                 Cancel
