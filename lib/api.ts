@@ -13,21 +13,33 @@ export const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
+    console.log("Sending request:", config.url, "Token:", token); // Debug: Log request and token
     if (token && token !== "demo-token") {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    console.error("Request interceptor error:", error);
+    return Promise.reject(error);
+  }
 );
 
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401 && error.config?.url !== "/auth/login") {
+    console.error("Response error:", {
+      url: error.config?.url,
+      status: error.response?.status,
+      data: error.response?.data,
+    }); // Debug: Log error details
+    if (
+      error.response?.status === 401 &&
+      error.config?.url !== "/auth/login"
+    ) {
       localStorage.removeItem("token");
       window.location.href = "/login";
     }
-    return Promise.reject(error); 
+    return Promise.reject(error);
   }
 );
