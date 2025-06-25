@@ -244,7 +244,8 @@ export default function ProjectsPage() {
       console.error("Fetch projects error:", error.response?.data);
       toast({
         title: "Error",
-        description: error.response?.data?.message || "Failed to fetch projects.",
+        description:
+          error.response?.data?.message || "Failed to fetch projects.",
         variant: "destructive",
       });
     } finally {
@@ -277,7 +278,8 @@ export default function ProjectsPage() {
       console.error("Create project error:", error.response?.data);
       toast({
         title: "Error",
-        description: error.response?.data?.message || "Failed to create project.",
+        description:
+          error.response?.data?.message || "Failed to create project.",
         variant: "destructive",
       });
     }
@@ -295,9 +297,13 @@ export default function ProjectsPage() {
         formData.append("file", data.file);
       }
 
-      const response = await api.patch(`/projects/${editProject.id}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const response = await api.patch(
+        `/projects/${editProject.id}`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
 
       await fetchProjects();
       setEditProject(null);
@@ -310,7 +316,8 @@ export default function ProjectsPage() {
       console.error("Update project error:", error.response?.data);
       toast({
         title: "Error",
-        description: error.response?.data?.message || "Failed to update project.",
+        description:
+          error.response?.data?.message || "Failed to update project.",
         variant: "destructive",
       });
     }
@@ -328,7 +335,8 @@ export default function ProjectsPage() {
       console.error("Delete project error:", error.response?.data);
       toast({
         title: "Error",
-        description: error.response?.data?.message || "Failed to delete project.",
+        description:
+          error.response?.data?.message || "Failed to delete project.",
         variant: "destructive",
       });
     }

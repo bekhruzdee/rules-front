@@ -35,7 +35,8 @@ api.interceptors.response.use(
     }); // Debug: Log error details
     if (
       error.response?.status === 401 &&
-      error.config?.url !== "/auth/login"
+      error.config?.url !== "/auth/login" &&
+      !error.config?.url?.startsWith("/projects") // Skip redirect for /projects
     ) {
       localStorage.removeItem("token");
       window.location.href = "/login";

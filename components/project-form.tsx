@@ -238,7 +238,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -254,14 +260,21 @@ interface ProjectFormProps {
   };
 }
 
-export function ProjectForm({ users, onSubmit, onCancel, initialData }: ProjectFormProps) {
+export function ProjectForm({
+  users,
+  onSubmit,
+  onCancel,
+  initialData,
+}: ProjectFormProps) {
   const [formData, setFormData] = useState({
     name: initialData?.name || "",
     description: initialData?.description || "",
     selectedUsers: initialData?.selectedUsers || [],
   });
   const [file, setFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(initialData?.imagePath || null);
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    initialData?.imagePath || null
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -315,9 +328,13 @@ export function ProjectForm({ users, onSubmit, onCancel, initialData }: ProjectF
       <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle>{initialData ? "Edit Project" : "Create New Project"}</CardTitle>
+            <CardTitle>
+              {initialData ? "Edit Project" : "Create New Project"}
+            </CardTitle>
             <CardDescription>
-              {initialData ? "Update project details and team members" : "Fill in the project details and assign team members"}
+              {initialData
+                ? "Update project details and team members"
+                : "Fill in the project details and assign team members"}
             </CardDescription>
           </div>
           <Button variant="ghost" size="sm" onClick={onCancel}>
@@ -331,7 +348,9 @@ export function ProjectForm({ users, onSubmit, onCancel, initialData }: ProjectF
               <Input
                 id="name"
                 value={formData.name}
-                onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, name: e.target.value }))
+                }
                 placeholder="Enter project name"
                 required
               />
@@ -342,7 +361,12 @@ export function ProjectForm({ users, onSubmit, onCancel, initialData }: ProjectF
               <Textarea
                 id="description"
                 value={formData.description}
-                onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
                 placeholder="Describe the project goals and objectives"
                 rows={4}
                 required
@@ -370,7 +394,9 @@ export function ProjectForm({ users, onSubmit, onCancel, initialData }: ProjectF
                   onChange={handleFileChange}
                 />
               </div>
-              <p className="text-sm text-gray-500">Optional: Add a project cover image</p>
+              <p className="text-sm text-gray-500">
+                Optional: Add a project cover image
+              </p>
               {imagePreview && (
                 <img
                   src={imagePreview}
@@ -384,7 +410,10 @@ export function ProjectForm({ users, onSubmit, onCancel, initialData }: ProjectF
               <Label>Assign Team Members</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {users.map((user) => (
-                  <div key={user.id} className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50">
+                  <div
+                    key={user.id}
+                    className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50"
+                  >
                     <Checkbox
                       id={`user-${user.id}`}
                       checked={formData.selectedUsers.includes(user.id)}
@@ -424,7 +453,10 @@ export function ProjectForm({ users, onSubmit, onCancel, initialData }: ProjectF
               <Button type="button" variant="outline" onClick={onCancel}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={!formData.name || !formData.description}>
+              <Button
+                type="submit"
+                disabled={!formData.name || !formData.description}
+              >
                 {initialData ? "Update Project" : "Create Project"}
               </Button>
             </div>

@@ -91,7 +91,13 @@
 //   );
 // }
 import { Users, Edit, Trash2 } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
@@ -131,7 +137,9 @@ export function ProjectList({ projects, onEdit, onDelete }: ProjectListProps) {
               />
             </div>
             <CardTitle className="text-lg">{project.name}</CardTitle>
-            <CardDescription className="line-clamp-2">{project.description}</CardDescription>
+            <CardDescription className="line-clamp-2">
+              {project.description}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -142,7 +150,10 @@ export function ProjectList({ projects, onEdit, onDelete }: ProjectListProps) {
                 </div>
                 <div className="flex -space-x-2">
                   {project.users.slice(0, 3).map((user) => (
-                    <Avatar key={user.id} className="w-6 h-6 border-2 border-white">
+                    <Avatar
+                      key={user.id}
+                      className="w-6 h-6 border-2 border-white"
+                    >
                       <AvatarFallback className="text-xs">
                         {user.name
                           .split(" ")
@@ -153,7 +164,9 @@ export function ProjectList({ projects, onEdit, onDelete }: ProjectListProps) {
                   ))}
                   {project.users.length > 3 && (
                     <div className="w-6 h-6 bg-gray-200 rounded-full border-2 border-white flex items-center justify-center">
-                      <span className="text-xs text-gray-600">+{project.users.length - 3}</span>
+                      <span className="text-xs text-gray-600">
+                        +{project.users.length - 3}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -172,7 +185,9 @@ export function ProjectList({ projects, onEdit, onDelete }: ProjectListProps) {
                   variant="destructive"
                   size="sm"
                   onClick={() => {
-                    if (confirm("Are you sure you want to delete this project?")) {
+                    if (
+                      confirm("Are you sure you want to delete this project?")
+                    ) {
                       onDelete(project.id);
                     }
                   }}
