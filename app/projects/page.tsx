@@ -227,7 +227,9 @@ export default function ProjectsPage() {
             name: project.name,
             description: project.description || "",
             imagePath: project.imagePath
-              ? `http://localhost:3000/${project.imagePath}`
+              ? // ? `http://localhost:3000/${project.imagePath}`
+                // : "",
+                `process.env.NEXT_PUBLIC_API_URL${project.imagePath}`
               : "",
             users: project.users.map((u: any) => ({
               id: u.id.toString(),

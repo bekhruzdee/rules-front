@@ -13,7 +13,7 @@ export const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
-    console.log("Sending request:", config.url, "Token:", token); // Debug: Log request and token
+    console.log("Sending request:", config.url, "Token:", token);
     if (token && token !== "demo-token") {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -32,11 +32,11 @@ api.interceptors.response.use(
       url: error.config?.url,
       status: error.response?.status,
       data: error.response?.data,
-    }); // Debug: Log error details
+    });
     if (
       error.response?.status === 401 &&
       error.config?.url !== "/auth/login" &&
-      !error.config?.url?.startsWith("/projects") // Skip redirect for /projects
+      !error.config?.url?.startsWith("/projects")
     ) {
       localStorage.removeItem("token");
       window.location.href = "/login";
