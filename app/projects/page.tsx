@@ -216,6 +216,11 @@ export default function ProjectsPage() {
     { id: "3", name: "Mike Johnson", email: "mike@example.com" },
   ];
 
+  const onEditProject = (project: any) => {
+    setEditProject(project);
+    setShowForm(true);
+  };
+
   const fetchProjects = async () => {
     try {
       const response = await api.get("/projects");
@@ -400,7 +405,7 @@ export default function ProjectsPage() {
         ) : (
           <ProjectList
             projects={projects}
-            onEdit={setEditProject}
+            onEdit={onEditProject}
             onDelete={handleDeleteProject}
           />
         )}
