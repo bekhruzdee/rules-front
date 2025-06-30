@@ -293,35 +293,32 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 
-// BU YERDAGI USER INTERFEYSI `app/tasks/page.tsx` dagi `MappedUser` bilan bir xil bo'lishi kerak!
 interface User {
-  id: string; // TaskForm SelectItem'lari va Checkbox'lari string ID kutadi
+  id: string;
   name: string;
   email: string;
 }
 
-// BU YERDAGI PROJECT INTERFEYSI `app/tasks/page.tsx` dagi `MappedProject` bilan bir xil bo'lishi kerak!
 interface Project {
-  id: string; // TaskForm SelectItem'lari string ID kutadi
+  id: string;
   name: string;
   description: string;
 }
 
-// TaskForm dan backendga yuboriladigan ma'lumotlar interfeysi
 export interface TaskFormData {
   title: string;
   description: string;
   status: "TODO" | "IN_PROGRESS" | "DONE";
   priority: "LOW" | "MEDIUM" | "HIGH";
   completed: boolean;
-  projectId: string; // `TaskForm`da Select komponenti string ID qaytaradi
-  assignedUsers: { id: string }[]; // `TaskForm`da Checkboxlar string ID'lar massivi qaytaradi
+  projectId: string;
+  assignedUsers: { id: string }[];
   dueDate?: string;
 }
 
 interface TaskFormProps {
-  users: User[];    // Yuqoridagi User[] tipida
-  projects: Project[]; // Yuqoridagi Project[] tipida
+  users: User[];
+  projects: Project[];
   onSubmit: (data: TaskFormData) => void;
   onCancel: () => void;
 }
@@ -338,7 +335,12 @@ const priorityOptions = [
   { value: "HIGH", label: "High" },
 ];
 
-export function TaskForm({ users, projects, onSubmit, onCancel }: TaskFormProps) {
+export function TaskForm({
+  users,
+  projects,
+  onSubmit,
+  onCancel,
+}: TaskFormProps) {
   const [formData, setFormData] = useState<TaskFormData>({
     title: "",
     description: "",
@@ -423,7 +425,13 @@ export function TaskForm({ users, projects, onSubmit, onCancel }: TaskFormProps)
                 required
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={projects.length > 0 ? "Select a project" : "No projects available"} />
+                  <SelectValue
+                    placeholder={
+                      projects.length > 0
+                        ? "Select a project"
+                        : "No projects available"
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {projects.length > 0 ? (
@@ -438,7 +446,9 @@ export function TaskForm({ users, projects, onSubmit, onCancel }: TaskFormProps)
                       </SelectItem>
                     ))
                   ) : (
-                    <p className="p-2 text-sm text-muted-foreground">No projects to select.</p>
+                    <p className="p-2 text-sm text-muted-foreground">
+                      No projects to select.
+                    </p>
                   )}
                 </SelectContent>
               </Select>
@@ -532,7 +542,9 @@ export function TaskForm({ users, projects, onSubmit, onCancel }: TaskFormProps)
                     >
                       <Checkbox
                         id={`task-user-${user.id}`}
-                        checked={formData.assignedUsers.some((u) => u.id === user.id)}
+                        checked={formData.assignedUsers.some(
+                          (u) => u.id === user.id
+                        )}
                         onCheckedChange={() => handleUserToggle(user.id)}
                       />
                       <div className="flex items-center space-x-2 flex-1">
@@ -547,7 +559,9 @@ export function TaskForm({ users, projects, onSubmit, onCancel }: TaskFormProps)
                     </div>
                   ))
                 ) : (
-                  <p className="text-sm text-muted-foreground col-span-full">No users available.</p>
+                  <p className="text-sm text-muted-foreground col-span-full">
+                    No users available.
+                  </p>
                 )}
               </div>
 
@@ -579,8 +593,8 @@ export function TaskForm({ users, projects, onSubmit, onCancel }: TaskFormProps)
                 disabled={
                   !formData.title ||
                   !formData.description ||
-                  !formData.projectId || // Loyiha tanlanmaguncha tugmani o'chirish
-                  projects.length === 0 // Agar loyihalar umuman bo'lmasa ham o'chirish
+                  !formData.projectId ||
+                  projects.length === 0
                 }
               >
                 Create Task

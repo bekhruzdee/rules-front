@@ -70,7 +70,7 @@
 //             </CardHeader>
 //             <CardContent>
 //               <div className="space-y-3">
-              
+
 //                 <div className="flex items-center space-x-2">
 //                   <span className="text-sm text-gray-600">Project:</span>
 //                   <Badge variant="outline">{task.project.name}</Badge>
@@ -105,7 +105,6 @@
 //                   </div>
 //                 </div>
 
-                
 //                 {task.completed && (
 //                   <div className="flex items-center space-x-2 text-green-600">
 //                     <CheckCircle className="h-4 w-4" />
@@ -135,7 +134,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 interface Project {
-  id: string; // TaskList da string
+  id: string;
   name: string;
   description: string;
   imagePath: string;
@@ -143,15 +142,15 @@ interface Project {
 }
 
 interface Task {
-  id: string; // TaskList da string
+  id: string;
   title: string;
   description: string;
   status: "TODO" | "IN_PROGRESS" | "DONE";
-  priority: "LOW" | "MEDIUM" | "HIGH"; // Task List uchun ham priority qo'shildi
+  priority: "LOW" | "MEDIUM" | "HIGH";
   completed: boolean;
   project: Project;
-  assignedUsers: { id: string; name: string; email: string }[]; // Bu yerda ham array bo'lsin
-  dueDate?: string; // Optional due date
+  assignedUsers: { id: string; name: string; email: string }[];
+  dueDate?: string;
 }
 
 interface TaskListProps {

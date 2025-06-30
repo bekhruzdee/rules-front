@@ -246,7 +246,7 @@
 //       await api.patch(`/tasks/${taskId}`, { status: newStatus });
 //       toast({ title: "Task status updated" });
 //     } catch (err: any) {
-//       setTasks(tasks); 
+//       setTasks(tasks);
 //       toast({
 //         title: "Error updating task",
 //         description: err.message || "Failed to update task status",
@@ -465,14 +465,16 @@ import {
   Draggable,
   type DropResult,
 } from "@hello-pangea/dnd";
-import { TaskForm, type TaskFormData as TaskFormSubmissionData } from "@/components/task-form";
-import { api } from "@/lib/api"; // Sizning API konfiguratsiyangiz
+import {
+  TaskForm,
+  type TaskFormData as TaskFormSubmissionData,
+} from "@/components/task-form";
+import { api } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { format, parseISO, isValid } from "date-fns";
 
-// Backenddan keladigan User interfeysi. Backend javobiga qarab o'zgartiring!
 interface BackendUser {
-  id: number; // Backenddan ID odatda raqam bo'ladi
+  id: number;
   username: string;
   firstName?: string;
   lastName?: string;
@@ -480,31 +482,25 @@ interface BackendUser {
   email?: string;
 }
 
-// Backenddan keladigan Project interfeysi. Backend javobiga qarab o'zgartiring!
 interface BackendProject {
-  id: number; // Backenddan ID odatda raqam bo'ladi
+  id: number;
   name: string;
   description?: string;
   imagePath?: string;
 }
 
-// Frontend TaskForm uchun kerak bo'ladigan soddalashtirilgan User interfeysi
-// Bu interfeys components/task-form.tsx dagi User interfeysi bilan bir xil bo'lishi kerak!
 interface MappedUser {
-  id: string; // TaskForm SelectItem'lari string ID kutadi
+  id: string;
   name: string;
   email: string;
 }
 
-// Frontend TaskForm uchun kerak bo'ladigan soddalashtirilgan Project interfeysi
-// Bu interfeys components/task-form.tsx dagi Project interfeysi bilan bir xil bo'lishi kerak!
 interface MappedProject {
-  id: string; // TaskForm SelectItem'lari string ID kutadi
+  id: string;
   name: string;
   description: string;
 }
 
-// Backenddan keladigan Task interfeysi
 interface Task {
   id: number;
   title: string;
@@ -513,8 +509,8 @@ interface Task {
   priority: "LOW" | "MEDIUM" | "HIGH";
   dueDate?: string;
   completed: boolean;
-  assignedUser?: BackendUser; // Taskga biriktirilgan user
-  project: BackendProject;    // Taskga biriktirilgan loyiha
+  assignedUser?: BackendUser;
+  project: BackendProject;
 }
 
 const statusColumns = {
@@ -527,23 +523,37 @@ export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [showTaskForm, setShowTaskForm] = useState(false);
-  const [projects, setProjects] = useState<BackendProject[]>([]); // API'dan keladigan xom loyihalar
-  const [users, setUsers] = useState<BackendUser[]>([]);       // API'dan keladigan xom foydalanuvchilar
+  const [projects, setProjects] = useState<BackendProject[]>([]);
+  const [users, setUsers] = useState<BackendUser[]>([]);
   const { toast } = useToast();
 
   const fetchInitialData = async () => {
     setLoading(true);
     try {
       const [tasksRes, projectsRes, usersRes] = await Promise.all([
-        api.get("/tasks").catch((error) => { console.error("Error fetching tasks:", error); return { data: [] }; }),
-        api.get("/projects").catch((error) => { console.error("Error fetching projects:", error); return { data: [] }; }),
-        api.get("/users").catch((error) => { console.error("Error fetching users:", error); return { data: [] }; }),
+        api.get("/tasks").catch((error) => {
+          console.error("Error fetching tasks:", error);
+          return { data: [] };
+        }),
+        api.get("/projects").catch((error) => {
+          console.error("Error fetching projects:", error);
+          return { data: [] };
+        }),
+        api.get("/users").catch((error) => {
+          console.error("Error fetching users:", error);
+          return { data: [] };
+        }),
       ]);
 
-      // API javoblari massiv ekanligini tekshirish
-      const tasksData: Task[] = Array.isArray(tasksRes.data) ? tasksRes.data : [];
-      const projectsData: BackendProject[] = Array.isArray(projectsRes.data) ? projectsRes.data : [];
-      const usersData: BackendUser[] = Array.isArray(usersRes.data) ? usersRes.data : [];
+      const tasksData: Task[] = Array.isArray(tasksRes.data)
+        ? tasksRes.data
+        : [];
+      const projectsData: BackendProject[] = Array.isArray(projectsRes.data)
+        ? projectsRes.data
+        : [];
+      const usersData: BackendUser[] = Array.isArray(usersRes.data)
+        ? usersRes.data
+        : [];
 
       setTasks(tasksData);
       setProjects(projectsData);
@@ -552,18 +562,19 @@ export default function TasksPage() {
       console.log("Fetched Projects (Raw from API):", projectsData);
       console.log("Fetched Users (Raw from API):", usersData);
 
-      // Foydalanuvchiga xabar berish
       if (!projectsData.length) {
         toast({
           title: "No Projects Loaded",
-          description: "Could not load any projects from the backend. The 'Project' dropdown might be empty.",
+          description:
+            "Could not load any projects from the backend. The 'Project' dropdown might be empty.",
           variant: "default",
         });
       }
       if (!usersData.length) {
         toast({
           title: "No Users Loaded",
-          description: "Could not load any users from the backend. 'Assigned to' section might be empty.",
+          description:
+            "Could not load any users from the backend. 'Assigned to' section might be empty.",
           variant: "default",
         });
       }
@@ -574,11 +585,12 @@ export default function TasksPage() {
           variant: "default",
         });
       }
-
     } catch (err: any) {
       toast({
         title: "Error loading data",
-        description: err.message || "Failed to fetch essential data (tasks, projects, users) from backend. Please check your network connection and API server.",
+        description:
+          err.message ||
+          "Failed to fetch essential data (tasks, projects, users) from backend. Please check your network connection and API server.",
         variant: "destructive",
         action: (
           <Button variant="outline" size="sm" onClick={fetchInitialData}>
@@ -595,33 +607,28 @@ export default function TasksPage() {
     fetchInitialData();
   }, []);
 
-  // `TaskForm` uchun `BackendUser` ma'lumotlarini `MappedUser` formatiga moslashtirish
   const mappedUsers: MappedUser[] = useMemo(
     () =>
       users
-        .filter(u => u.id != null && u.id !== 0 && typeof u.id === 'number') // ID null/0 emas va raqam ekanligini tekshiramiz
+        .filter((u) => u.id != null && u.id !== 0 && typeof u.id === "number")
         .map((u) => ({
-          id: String(u.id), // `TaskForm` ID'ni string kutgani uchun aylantiramiz
+          id: String(u.id),
           name: `${u.firstName || ""} ${u.lastName || ""}`.trim() || u.username,
           email: u.email || `${u.username}@example.com`,
         })),
     [users]
   );
 
-  // `TaskForm` uchun `BackendProject` ma'lumotlarini `MappedProject` formatiga moslashtirish
-  const mappedProjects: MappedProject[] = useMemo(
-    () => {
-      console.log("Projects being mapped for TaskForm:", projects);
-      return projects
-        .filter(p => p.id != null && p.id !== 0 && typeof p.id === 'number') // ID null/0 emas va raqam ekanligini tekshiramiz
-        .map((p) => ({
-          id: String(p.id), // `TaskForm` ID'ni string kutgani uchun aylantiramiz
-          name: p.name,
-          description: p.description || "No description provided",
-        }));
-    },
-    [projects]
-  );
+  const mappedProjects: MappedProject[] = useMemo(() => {
+    console.log("Projects being mapped for TaskForm:", projects);
+    return projects
+      .filter((p) => p.id != null && p.id !== 0 && typeof p.id === "number")
+      .map((p) => ({
+        id: String(p.id),
+        name: p.name,
+        description: p.description || "No description provided",
+      }));
+  }, [projects]);
 
   const handleCreateTask = async (data: TaskFormSubmissionData) => {
     setLoading(true);
@@ -633,13 +640,15 @@ export default function TasksPage() {
         priority: data.priority,
         dueDate: data.dueDate || null,
         completed: data.completed,
-        projectId: Number(data.projectId), // `TaskForm`dan string keladi, backendga raqam yuboramiz
-        assignedUserId: data.assignedUsers.length > 0 ? Number(data.assignedUsers[0].id) : undefined, // string ID ni raqamga
+        projectId: Number(data.projectId),
+        assignedUserId:
+          data.assignedUsers.length > 0
+            ? Number(data.assignedUsers[0].id)
+            : undefined,
       };
 
       const res = await api.post("/tasks", payload);
 
-      // Backenddan kelgan yangi task obyektini to'liq qabul qilish
       const newTask: Task = {
         id: res.data.id,
         title: res.data.title,
@@ -654,11 +663,17 @@ export default function TasksPage() {
 
       setTasks((prev) => [...prev, newTask]);
       setShowTaskForm(false);
-      toast({ title: "Task created successfully", description: `Task "${newTask.title}" added.` });
+      toast({
+        title: "Task created successfully",
+        description: `Task "${newTask.title}" added.`,
+      });
     } catch (err: any) {
       toast({
         title: "Failed to create task",
-        description: err.response?.data?.message || err.message || "An unexpected error occurred while creating the task.",
+        description:
+          err.response?.data?.message ||
+          err.message ||
+          "An unexpected error occurred while creating the task.",
         variant: "destructive",
       });
     } finally {
@@ -669,29 +684,33 @@ export default function TasksPage() {
   const handleDragEnd = async (result: DropResult) => {
     if (!result.destination) return;
     const { draggableId, destination } = result;
-    const taskId = Number(draggableId); // `draggableId` string bo'ladi, uni raqamga aylantiramiz
+    const taskId = Number(draggableId);
     const newStatus = destination.droppableId as Task["status"];
 
-    const originalTasks = tasks; // Agar xato ketsa, avvalgi holatga qaytarish uchun
+    const originalTasks = tasks;
     const updatedTasks = tasks.map((task) =>
       task.id === taskId ? { ...task, status: newStatus } : task
     );
-    setTasks(updatedTasks); // UI ni tez yangilash
+    setTasks(updatedTasks);
 
     try {
       await api.patch(`/tasks/${taskId}`, { status: newStatus });
-      toast({ title: "Task status updated", description: `Task moved to ${newStatus}.` });
+      toast({
+        title: "Task status updated",
+        description: `Task moved to ${newStatus}.`,
+      });
     } catch (err: any) {
-      setTasks(originalTasks); // Xato bo'lsa, avvalgi holatga qaytarish
+      setTasks(originalTasks);
       toast({
         title: "Error updating task status",
-        description: err.message || "Failed to update task status on the server.",
+        description:
+          err.message || "Failed to update task status on the server.",
         variant: "destructive",
         action: (
           <Button
             variant="outline"
             size="sm"
-            onClick={() => handleDragEnd(result)} // Qayta urinish
+            onClick={() => handleDragEnd(result)}
           >
             Retry
           </Button>
@@ -720,12 +739,32 @@ export default function TasksPage() {
     return (
       <DashboardLayout>
         <div className="flex flex-col items-center justify-center h-full text-center">
-          <svg className="animate-spin h-10 w-10 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          <svg
+            className="animate-spin h-10 w-10 text-primary"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
           </svg>
-          <p className="mt-4 text-lg text-muted-foreground">Loading your data...</p>
-          <p className="text-sm text-muted-foreground">Please ensure your backend server is running and accessible.</p>
+          <p className="mt-4 text-lg text-muted-foreground">
+            Loading your data...
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Please ensure your backend server is running and accessible.
+          </p>
         </div>
       </DashboardLayout>
     );
@@ -749,8 +788,8 @@ export default function TasksPage() {
 
         {showTaskForm && (
           <TaskForm
-            users={mappedUsers}   // MappedUser[] tipidagi ma'lumotlar
-            projects={mappedProjects} // MappedProject[] tipidagi ma'lumotlar
+            users={mappedUsers}
+            projects={mappedProjects}
             onSubmit={handleCreateTask}
             onCancel={() => setShowTaskForm(false)}
           />
