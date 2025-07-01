@@ -245,8 +245,6 @@
 //   );
 // }
 
-
-
 "use client";
 
 import { CheckCircle, Clock, AlertCircle, UserIcon } from "lucide-react";
@@ -347,7 +345,9 @@ export function TaskList({ tasks }: TaskListProps) {
                         className="w-6 h-6 border-2 border-white"
                       >
                         <AvatarFallback className="text-xs">
-                          {(user.firstName?.[0] || user.username[0]).toUpperCase()}
+                          {(
+                            user.firstName?.[0] || user.username[0]
+                          ).toUpperCase()}
                           {(user.lastName?.[0] || "").toUpperCase()}
                         </AvatarFallback>
                       </Avatar>

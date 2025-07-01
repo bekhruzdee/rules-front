@@ -607,7 +607,6 @@
 //   );
 // }
 
-
 "use client";
 
 import type React from "react";
@@ -707,7 +706,7 @@ export function TaskForm({
     setFormData((prev) => ({
       ...prev,
       assignedUsers: prev.assignedUsers.some((u) => u.id === userId)
-        ? prev.assignedUsers.filter((u) => u.id !==  userId)
+        ? prev.assignedUsers.filter((u) => u.id !== userId)
         : [...prev.assignedUsers, { id: userId }],
     }));
   };
@@ -717,9 +716,13 @@ export function TaskForm({
       <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle>{initialData ? "Edit Task" : "Create New Task"}</CardTitle>
+            <CardTitle>
+              {initialData ? "Edit Task" : "Create New Task"}
+            </CardTitle>
             <CardDescription>
-              {initialData ? "Update task details" : "Add a new task and assign it to team members"}
+              {initialData
+                ? "Update task details"
+                : "Add a new task and assign it to team members"}
             </CardDescription>
           </div>
           <Button variant="ghost" size="sm" onClick={onCancel}>
@@ -747,7 +750,10 @@ export function TaskForm({
                 id="description"
                 value={formData.description}
                 onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, description: e.target.value }))
+                  setFormData((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
                 }
                 placeholder="Describe what needs to be done"
                 rows={3}
