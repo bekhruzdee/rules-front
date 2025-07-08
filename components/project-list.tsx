@@ -104,7 +104,6 @@ import { Button } from "@/components/ui/button";
 interface User {
   id: string;
   name: string;
-  email: string;
 }
 
 interface Project {

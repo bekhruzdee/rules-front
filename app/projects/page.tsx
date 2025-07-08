@@ -191,7 +191,6 @@ import { ProjectList } from "@/components/project-list";
 interface User {
   id: string;
   name: string;
-  email: string;
 }
 
 interface Project {
@@ -205,54 +204,49 @@ interface Project {
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editProject, setEditProject] = useState<Project | null>(null);
   const { toast } = useToast();
 
-  const users: User[] = [
-    { id: "1", name: "John Doe", email: "john@example.com" },
-    { id: "2", name: "Jane Smith", email: "jane@example.com" },
-    { id: "3", name: "Mike Johnson", email: "mike@example.com" },
-  ];
-
-  const onEditProject = (project: any) => {
-    setEditProject(project);
-    setShowForm(true);
+  const fetchUsers = async () => {
+    try {
+      const res = await api.get("/users/all");
+      const data = res.data.data;
+      setUsers(data.map((u: any) => ({ id: u.id.toString(), name: u.username })));
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.response?.data?.message || "Failed to fetch users",
+        variant: "destructive",
+      });
+    }
   };
 
   const fetchProjects = async () => {
     try {
       const response = await api.get("/projects");
       const data = response.data.data;
-      if (Array.isArray(data)) {
-        setProjects(
-          data.map((project: any) => ({
-            id: project.id.toString(),
-            name: project.name,
-            description: project.description || "",
-            imagePath: project.imagePath
-              ? // ? `http://localhost:3000/${project.imagePath}`
-                // : "",
-                `process.env.NEXT_PUBLIC_API_URL${project.imagePath}`
-              : "",
-            users: project.users.map((u: any) => ({
-              id: u.id.toString(),
-              name: u.username,
-              email: `${u.username}@example.com`,
-            })),
-            createdAt: project.created_at,
-          }))
-        );
-      } else {
-        setProjects([]);
-      }
+      setProjects(
+        data.map((project: any) => ({
+          id: project.id.toString(),
+          name: project.name,
+          description: project.description || "",
+          imagePath: project.imagePath
+            ? `${process.env.NEXT_PUBLIC_API_URL}${project.imagePath}`
+            : "",
+          users: project.users.map((u: any) => ({
+            id: u.id.toString(),
+            name: u.username,
+          })),
+          createdAt: project.created_at,
+        }))
+      );
     } catch (error: any) {
-      console.error("Fetch projects error:", error.response?.data);
       toast({
         title: "Error",
-        description:
-          error.response?.data?.message || "Failed to fetch projects.",
+        description: error.response?.data?.message || "Failed to fetch projects",
         variant: "destructive",
       });
     } finally {
@@ -265,11 +259,8 @@ export default function ProjectsPage() {
       const formData = new FormData();
       formData.append("name", data.name);
       formData.append("description", data.description);
-      const userIds = data.users.map((u: User) => parseInt(u.id, 10));
-      formData.append("userIds", JSON.stringify(userIds));
-      if (data.file) {
-        formData.append("file", data.file);
-      }
+      formData.append("userIds", JSON.stringify(data.users.map((u: User) => parseInt(u.id, 10))));
+      if (data.file) formData.append("file", data.file);
 
       const response = await api.post("/projects", formData, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -277,16 +268,11 @@ export default function ProjectsPage() {
 
       await fetchProjects();
       setShowForm(false);
-      toast({
-        title: "Success",
-        description: response.data.message,
-      });
+      toast({ title: "Success", description: response.data.message });
     } catch (error: any) {
-      console.error("Create project error:", error.response?.data);
       toast({
         title: "Error",
-        description:
-          error.response?.data?.message || "Failed to create project.",
+        description: error.response?.data?.message || "Failed to create project",
         variant: "destructive",
       });
     }
@@ -296,35 +282,23 @@ export default function ProjectsPage() {
     if (!editProject) return;
     try {
       const formData = new FormData();
-      formData.append("name", data.name || "");
-      formData.append("description", data.description || "");
-      const userIds = data.users.map((u: User) => parseInt(u.id, 10));
-      formData.append("userIds", JSON.stringify(userIds));
-      if (data.file) {
-        formData.append("file", data.file);
-      }
+      formData.append("name", data.name);
+      formData.append("description", data.description);
+      formData.append("userIds", JSON.stringify(data.users.map((u: User) => parseInt(u.id, 10))));
+      if (data.file) formData.append("file", data.file);
 
-      const response = await api.patch(
-        `/projects/${editProject.id}`,
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
+      const response = await api.patch(`/projects/${editProject.id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
       await fetchProjects();
       setEditProject(null);
       setShowForm(false);
-      toast({
-        title: "Success",
-        description: response.data.message,
-      });
+      toast({ title: "Success", description: response.data.message });
     } catch (error: any) {
-      console.error("Update project error:", error.response?.data);
       toast({
         title: "Error",
-        description:
-          error.response?.data?.message || "Failed to update project.",
+        description: error.response?.data?.message || "Failed to update project",
         variant: "destructive",
       });
     }
@@ -334,24 +308,20 @@ export default function ProjectsPage() {
     try {
       const response = await api.delete(`/projects/${id}`);
       await fetchProjects();
-      toast({
-        title: "Success",
-        description: response.data.message,
-      });
+      toast({ title: "Success", description: response.data.message });
     } catch (error: any) {
-      console.error("Delete project error:", error.response?.data);
       toast({
         title: "Error",
-        description:
-          error.response?.data?.message || "Failed to delete project.",
+        description: error.response?.data?.message || "Failed to delete project",
         variant: "destructive",
       });
     }
   };
 
   useEffect(() => {
+    fetchUsers();
     fetchProjects();
-  }, [toast]);
+  }, []);
 
   return (
     <DashboardLayout>
@@ -405,7 +375,7 @@ export default function ProjectsPage() {
         ) : (
           <ProjectList
             projects={projects}
-            onEdit={onEditProject}
+            onEdit={setEditProject}
             onDelete={handleDeleteProject}
           />
         )}
@@ -413,3 +383,4 @@ export default function ProjectsPage() {
     </DashboardLayout>
   );
 }
+

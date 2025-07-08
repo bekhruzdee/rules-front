@@ -248,8 +248,13 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 
+interface User {
+  id: string;
+  name: string;
+}
+
 interface ProjectFormProps {
-  users: { id: string; name: string; email: string }[];
+  users: User[];
   onSubmit: (data: any) => void;
   onCancel: () => void;
   initialData?: {
@@ -376,7 +381,7 @@ export function ProjectForm({
                     description: e.target.value,
                   }))
                 }
-                placeholder="Describe the project goals and objectives"
+                placeholder="Describe the project"
                 rows={4}
                 required
               />
@@ -409,22 +414,20 @@ export function ProjectForm({
                 </Button>
                 <Input
                   type="file"
-                  id="file"
                   ref={fileInputRef}
                   accept="image/*"
                   className="hidden"
                   onChange={handleFileChange}
                 />
               </div>
-              <p className="text-sm text-gray-500">
-                You can provide an image URL or upload an image file.
-              </p>
               {imagePreview && (
                 <img
                   src={imagePreview}
-                  alt="Project preview"
+                  alt="Preview"
                   className="mt-2 rounded max-h-40 object-cover"
-                  onError={(e) => (e.currentTarget.src = "/placeholder.svg")}
+                  onError={(e) =>
+                    (e.currentTarget.src = "/placeholder.svg")
+                  }
                 />
               )}
             </div>
@@ -448,7 +451,6 @@ export function ProjectForm({
                       </div>
                       <div>
                         <p className="text-sm font-medium">{user.name}</p>
-                        <p className="text-xs text-gray-500">{user.email}</p>
                       </div>
                     </div>
                   </div>
