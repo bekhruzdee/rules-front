@@ -38,39 +38,45 @@ export function ProjectList({ projects, onEdit, onDelete }: ProjectListProps) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {projects.map((project) => (
-        <Card key={project.id} className="hover:shadow-lg transition-shadow">
-          <CardHeader>
-            <div className="aspect-video bg-gray-100 rounded-lg mb-4 overflow-hidden flex items-center justify-center">
-              {isImage(project.imagePath) ? (
-                <img
-                  src={project.imagePath || "/placeholder.svg"}
-                  alt={project.name}
-                  className="w-full h-full object-cover"
-                  onError={(e) => (e.currentTarget.src = "/placeholder.svg")}
-                />
-              ) : project.imagePath ? (
-                <div className="flex flex-col items-center justify-center p-4">
-                  <FileText className="w-6 h-6 text-gray-500 mb-1" />
-                  <span className="text-xs text-gray-600 text-center break-words">
-                    {project.imagePath.split("/").pop()}
-                  </span>
-                </div>
-              ) : (
-                <img
-                  src="/placeholder.svg"
-                  alt="placeholder"
-                  className="w-full h-full object-cover"
-                />
-              )}
-            </div>
-            <CardTitle className="text-lg">{project.name}</CardTitle>
-            <CardDescription className="line-clamp-2">
-              {project.description}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
+      {projects.map((project) => {
+        const previewUrl = project.imagePath || "/placeholder.svg";
+        const previewFileName = project.imagePath?.split("/").pop();
+
+        return (
+          <Card key={project.id} className="hover:shadow-md transition-shadow">
+            <CardHeader>
+              <div className="aspect-video bg-gray-100 rounded-lg mb-4 overflow-hidden flex items-center justify-center">
+                {isImage(project.imagePath) ? (
+                  <img
+                    src={previewUrl}
+                    alt={project.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => (e.currentTarget.src = "/placeholder.svg")}
+                  />
+                ) : project.imagePath ? (
+                  <div className="flex flex-col items-center justify-center p-4 text-center">
+                    <FileText className="w-6 h-6 text-gray-500 mb-1" />
+                    <span className="text-xs text-gray-600 break-all">
+                      {previewFileName}
+                    </span>
+                  </div>
+                ) : (
+                  <img
+                    src="/placeholder.svg"
+                    alt="placeholder"
+                    className="w-full h-full object-cover"
+                  />
+                )}
+              </div>
+              <CardTitle className="text-lg font-semibold">
+                {project.name}
+              </CardTitle>
+              <CardDescription className="line-clamp-2">
+                {project.description}
+              </CardDescription>
+            </CardHeader>
+
+            <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <Users className="h-4 w-4 text-gray-500" />
@@ -80,33 +86,32 @@ export function ProjectList({ projects, onEdit, onDelete }: ProjectListProps) {
                   {project.users.slice(0, 3).map((user) => (
                     <Avatar
                       key={user.id}
-                      className="w-6 h-6 border-2 border-white"
+                      className="w-6 h-6 border-2 border-white text-xs"
                     >
-                      <AvatarFallback className="text-xs">
+                      <AvatarFallback>
                         {user.name
                           .split(" ")
                           .map((n) => n[0])
-                          .join("")}
+                          .join("")
+                          .slice(0, 2)}
                       </AvatarFallback>
                     </Avatar>
                   ))}
                   {project.users.length > 3 && (
-                    <div className="w-6 h-6 bg-gray-200 rounded-full border-2 border-white flex items-center justify-center">
-                      <span className="text-xs text-gray-600">
-                        +{project.users.length - 3}
-                      </span>
+                    <div className="w-6 h-6 bg-gray-200 rounded-full border-2 border-white flex items-center justify-center text-xs text-gray-600">
+                      +{project.users.length - 3}
                     </div>
                   )}
                 </div>
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex gap-2 justify-end">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => onEdit(project)}
                 >
-                  <Edit className="h-4 w-4 mr-2" />
+                  <Edit className="h-4 w-4 mr-1" />
                   Edit
                 </Button>
                 <Button
@@ -120,14 +125,14 @@ export function ProjectList({ projects, onEdit, onDelete }: ProjectListProps) {
                     }
                   }}
                 >
-                  <Trash2 className="h-4 w-4 mr-2" />
+                  <Trash2 className="h-4 w-4 mr-1" />
                   Delete
                 </Button>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+            </CardContent>
+          </Card>
+        );
+      })}
     </div>
   );
 }
