@@ -149,15 +149,9 @@ export function ProjectList({ projects, onEdit, onDelete }: ProjectListProps) {
                 </div>
                 <div className="flex -space-x-2">
                   {project.users.slice(0, 3).map((user) => (
-                    <Avatar
-                      key={user.id}
-                      className="w-6 h-6 border-2 border-white"
-                    >
+                    <Avatar key={user.id} className="w-6 h-6 border-2 border-white">
                       <AvatarFallback className="text-xs">
-                        {user.name
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")}
+                        {user.name.split(" ").map((n) => n[0]).join("")}
                       </AvatarFallback>
                     </Avatar>
                   ))}
@@ -172,11 +166,7 @@ export function ProjectList({ projects, onEdit, onDelete }: ProjectListProps) {
               </div>
 
               <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => onEdit(project)}
-                >
+                <Button variant="outline" size="sm" onClick={() => onEdit(project)}>
                   <Edit className="h-4 w-4 mr-2" />
                   Edit
                 </Button>
@@ -184,9 +174,7 @@ export function ProjectList({ projects, onEdit, onDelete }: ProjectListProps) {
                   variant="destructive"
                   size="sm"
                   onClick={() => {
-                    if (
-                      confirm("Are you sure you want to delete this project?")
-                    ) {
+                    if (confirm("Are you sure you want to delete this project?")) {
                       onDelete(project.id);
                     }
                   }}
@@ -202,3 +190,4 @@ export function ProjectList({ projects, onEdit, onDelete }: ProjectListProps) {
     </div>
   );
 }
+

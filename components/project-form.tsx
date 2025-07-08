@@ -303,6 +303,7 @@ export function ProjectForm({
       users: users.filter((user) => formData.selectedUsers.includes(user.id)),
       file,
     });
+
     if (!initialData) {
       setFormData({
         name: "",
@@ -381,7 +382,7 @@ export function ProjectForm({
                     description: e.target.value,
                   }))
                 }
-                placeholder="Describe the project"
+                placeholder="Describe the project goals and objectives"
                 rows={4}
                 required
               />
@@ -414,6 +415,7 @@ export function ProjectForm({
                 </Button>
                 <Input
                   type="file"
+                  id="file"
                   ref={fileInputRef}
                   accept="image/*"
                   className="hidden"
@@ -423,11 +425,9 @@ export function ProjectForm({
               {imagePreview && (
                 <img
                   src={imagePreview}
-                  alt="Preview"
+                  alt="Project preview"
                   className="mt-2 rounded max-h-40 object-cover"
-                  onError={(e) =>
-                    (e.currentTarget.src = "/placeholder.svg")
-                  }
+                  onError={(e) => (e.currentTarget.src = "/placeholder.svg")}
                 />
               )}
             </div>

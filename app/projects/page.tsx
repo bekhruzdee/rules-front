@@ -214,7 +214,10 @@ export default function ProjectsPage() {
     try {
       const res = await api.get("/users/all");
       const data = res.data.data;
-      setUsers(data.map((u: any) => ({ id: u.id.toString(), name: u.username })));
+      setUsers(data.map((u: any) => ({
+        id: u.id.toString(),
+        name: u.username
+      })));
     } catch (error: any) {
       toast({
         title: "Error",
@@ -228,21 +231,21 @@ export default function ProjectsPage() {
     try {
       const response = await api.get("/projects");
       const data = response.data.data;
-      setProjects(
-        data.map((project: any) => ({
+      if (Array.isArray(data)) {
+        setProjects(data.map((project: any) => ({
           id: project.id.toString(),
           name: project.name,
           description: project.description || "",
-          imagePath: project.imagePath
-            ? `${process.env.NEXT_PUBLIC_API_URL}${project.imagePath}`
-            : "",
+          imagePath: project.imagePath ? `${process.env.NEXT_PUBLIC_API_URL}${project.imagePath}` : "",
           users: project.users.map((u: any) => ({
             id: u.id.toString(),
-            name: u.username,
+            name: u.username
           })),
           createdAt: project.created_at,
-        }))
-      );
+        })));
+      } else {
+        setProjects([]);
+      }
     } catch (error: any) {
       toast({
         title: "Error",
@@ -351,7 +354,7 @@ export default function ProjectsPage() {
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Projects</h1>
             <p className="text-muted-foreground">
-              Manage and track your team's projects
+              Manage and track your team’s projects
             </p>
           </div>
           <Button onClick={() => setShowForm(true)}>
@@ -375,7 +378,10 @@ export default function ProjectsPage() {
         ) : (
           <ProjectList
             projects={projects}
-            onEdit={setEditProject}
+            onEdit={(project) => {
+              setEditProject(project);
+              setShowForm(true);
+            }}
             onDelete={handleDeleteProject}
           />
         )}
@@ -383,4 +389,3 @@ export default function ProjectsPage() {
     </DashboardLayout>
   );
 }
-
