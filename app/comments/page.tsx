@@ -176,7 +176,8 @@ export default function CommentsPage() {
                         src={comment.user.avatar || "/placeholder.svg"}
                       />
                       <AvatarFallback>
-                        {comment.user.firstName?.[0] ?? comment.user.username[0]}
+                        {comment.user.firstName?.[0] ??
+                          comment.user.username[0]}
                         {comment.user.lastName?.[0] ?? ""}
                       </AvatarFallback>
                     </Avatar>

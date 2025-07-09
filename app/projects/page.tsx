@@ -33,8 +33,6 @@ export default function ProjectsPage() {
   const { toast } = useToast();
   const { user, isAuthenticated } = useAuth();
 
-
-
   const fetchUsers = async () => {
     try {
       const res = await api.get("/users/all");
