@@ -255,7 +255,7 @@ interface Project {
   id: string;
   name: string;
   description: string;
-  filePath?: string; // image, pdf, word, txt hammasi uchun
+  filePath?: string;
   users: User[];
   createdAt?: string;
 }
