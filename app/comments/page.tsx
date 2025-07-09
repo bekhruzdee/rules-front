@@ -62,127 +62,14 @@ export default function CommentsPage() {
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (token === "demo-token") {
-          const mockComments: Comment[] = [
-            {
-              id: 1,
-              content:
-                "Great progress on this task! The design looks really clean and modern.",
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
-              user: {
-                id: 2,
-                username: "janedoe",
-                firstName: "Jane",
-                lastName: "Doe",
-              },
-              task: {
-                id: 1,
-                title: "Design Homepage Layout",
-              },
-            },
-            {
-              id: 2,
-              content:
-                "We need to discuss the authentication flow before proceeding with implementation.",
-              createdAt: new Date(Date.now() - 86400000).toISOString(),
-              updatedAt: new Date(Date.now() - 86400000).toISOString(),
-              user: {
-                id: 1,
-                username: "johndoe",
-                firstName: "John",
-                lastName: "Doe",
-              },
-              project: {
-                id: 2,
-                name: "Mobile App Development",
-              },
-            },
-            {
-              id: 3,
-              content: "All unit tests are passing. Ready for code review.",
-              createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-              updatedAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-              user: {
-                id: 3,
-                username: "mikejohnson",
-                firstName: "Mike",
-                lastName: "Johnson",
-              },
-              task: {
-                id: 3,
-                title: "Write Unit Tests",
-              },
-            },
-          ];
-          setComments(mockComments);
-          setLoading(false);
-          return;
-        }
-
         const response = await api.get("/comments");
         setComments(response.data);
       } catch (error) {
         console.error("Failed to fetch comments:", error);
-
-        const mockComments: Comment[] = [
-          {
-            id: 1,
-            content:
-              "Great progress on this task! The design looks really clean and modern.",
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            user: {
-              id: 2,
-              username: "janedoe",
-              firstName: "Jane",
-              lastName: "Doe",
-            },
-            task: {
-              id: 1,
-              title: "Design Homepage Layout",
-            },
-          },
-          {
-            id: 2,
-            content:
-              "We need to discuss the authentication flow before proceeding with implementation.",
-            createdAt: new Date(Date.now() - 86400000).toISOString(),
-            updatedAt: new Date(Date.now() - 86400000).toISOString(),
-            user: {
-              id: 1,
-              username: "johndoe",
-              firstName: "John",
-              lastName: "Doe",
-            },
-            project: {
-              id: 2,
-              name: "Mobile App Development",
-            },
-          },
-          {
-            id: 3,
-            content: "All unit tests are passing. Ready for code review.",
-            createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-            updatedAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-            user: {
-              id: 3,
-              username: "mikejohnson",
-              firstName: "Mike",
-              lastName: "Johnson",
-            },
-            task: {
-              id: 3,
-              title: "Write Unit Tests",
-            },
-          },
-        ];
-        setComments(mockComments);
         toast({
-          title: "Demo Mode",
-          description: "Using mock data - connect to your backend API",
-          variant: "default",
+          title: "Error",
+          description: "Failed to load comments from the server.",
+          variant: "destructive",
         });
       } finally {
         setLoading(false);
@@ -289,9 +176,8 @@ export default function CommentsPage() {
                         src={comment.user.avatar || "/placeholder.svg"}
                       />
                       <AvatarFallback>
-                        {comment.user.firstName?.[0]}
-                        {comment.user.lastName?.[0]} ||
-                        {comment.user.username[0].toUpperCase()}
+                        {comment.user.firstName?.[0] ?? comment.user.username[0]}
+                        {comment.user.lastName?.[0] ?? ""}
                       </AvatarFallback>
                     </Avatar>
                     <div>

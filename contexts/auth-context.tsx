@@ -35,7 +35,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
@@ -49,29 +49,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const initializeAuth = async () => {
       try {
         const token = localStorage.getItem("token");
+        setUser(token)
 
-        if (token) {
-          if (token === "demo-token") {
-            setUser({
-              id: 1,
-              username: "demo",
-              email: "demo@example.com",
-              role: "USER",
-              firstName: "Demo",
-              lastName: "User",
-            });
-            setLoading(false);
-            return;
-          }
-
-          try {
-            const response = await api.get("/auth/profile");
-            setUser(response.data);
-          } catch (error: any) {
-            console.log("Backend not available, removing invalid token");
-            localStorage.removeItem("token");
-          }
-        }
       } catch (error) {
         console.error("Auth initialization error:", error);
       } finally {

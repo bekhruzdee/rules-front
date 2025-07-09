@@ -18,6 +18,9 @@ export function ProtectedRoute({
   const { user, loading, isAuthenticated } = useAuth();
   const router = useRouter();
 
+  console.log(isAuthenticated);
+  
+
   useEffect(() => {
     if (!loading && !isAuthenticated) {
       router.replace("/login");

@@ -36,111 +36,14 @@ export default function UsersPage() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (token === "demo-token") {
-          const mockUsers: UserInterface[] = [
-            {
-              id: 1,
-              username: "johndoe",
-              email: "john@example.com",
-              firstName: "John",
-              lastName: "Doe",
-              role: "USER",
-              createdAt: new Date().toISOString(),
-              _count: {
-                assignedTasks: 5,
-                assignedProjects: 2,
-                comments: 12,
-              },
-            },
-            {
-              id: 2,
-              username: "janedoe",
-              email: "jane@example.com",
-              firstName: "Jane",
-              lastName: "Doe",
-              role: "ADMIN",
-              createdAt: new Date(Date.now() - 86400000 * 30).toISOString(),
-              _count: {
-                assignedTasks: 8,
-                assignedProjects: 3,
-                comments: 24,
-              },
-            },
-            {
-              id: 3,
-              username: "mikejohnson",
-              email: "mike@example.com",
-              firstName: "Mike",
-              lastName: "Johnson",
-              role: "USER",
-              createdAt: new Date(Date.now() - 86400000 * 15).toISOString(),
-              _count: {
-                assignedTasks: 3,
-                assignedProjects: 1,
-                comments: 8,
-              },
-            },
-          ];
-          setUsers(mockUsers);
-          setLoading(false);
-          return;
-        }
-
         const response = await api.get("/users");
         setUsers(response.data);
       } catch (error) {
         console.error("Failed to fetch users:", error);
-
-        const mockUsers: UserInterface[] = [
-          {
-            id: 1,
-            username: "johndoe",
-            email: "john@example.com",
-            firstName: "John",
-            lastName: "Doe",
-            role: "USER",
-            createdAt: new Date().toISOString(),
-            _count: {
-              assignedTasks: 5,
-              assignedProjects: 2,
-              comments: 12,
-            },
-          },
-          {
-            id: 2,
-            username: "janedoe",
-            email: "jane@example.com",
-            firstName: "Jane",
-            lastName: "Doe",
-            role: "ADMIN",
-            createdAt: new Date(Date.now() - 86400000 * 30).toISOString(),
-            _count: {
-              assignedTasks: 8,
-              assignedProjects: 3,
-              comments: 24,
-            },
-          },
-          {
-            id: 3,
-            username: "mikejohnson",
-            email: "mike@example.com",
-            firstName: "Mike",
-            lastName: "Johnson",
-            role: "USER",
-            createdAt: new Date(Date.now() - 86400000 * 15).toISOString(),
-            _count: {
-              assignedTasks: 3,
-              assignedProjects: 1,
-              comments: 8,
-            },
-          },
-        ];
-        setUsers(mockUsers);
         toast({
-          title: "Demo Mode",
-          description: "Using mock data - connect to your backend API",
-          variant: "default",
+          title: "Error",
+          description: "Failed to fetch users from the server.",
+          variant: "destructive",
         });
       } finally {
         setLoading(false);
@@ -154,7 +57,7 @@ export default function UsersPage() {
     (user) =>
       user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      `${user.firstName} ${user.lastName}`
+      `${user.firstName ?? ""} ${user.lastName ?? ""}`
         .toLowerCase()
         .includes(searchTerm.toLowerCase())
   );
@@ -238,8 +141,8 @@ export default function UsersPage() {
                   <Avatar className="h-12 w-12">
                     <AvatarImage src={user.avatar || "/placeholder.svg"} />
                     <AvatarFallback>
-                      {user.firstName?.[0]}
-                      {user.lastName?.[0]} || {user.username[0].toUpperCase()}
+                      {user.firstName?.[0] ?? user.username[0]}
+                      {user.lastName?.[0] ?? ""}
                     </AvatarFallback>
                   </Avatar>
                   <div className="space-y-1">

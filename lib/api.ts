@@ -10,37 +10,41 @@ export const api = axios.create({
   timeout: 5000,
 });
 
+
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
-    console.log("Sending request:", config.url, "Token:", token);
-    if (token && token !== "demo-token") {
+
+    if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
     return config;
   },
   (error) => {
-    console.error("Request interceptor error:", error);
+    console.error("❌ Request error:", error);
     return Promise.reject(error);
   }
 );
 
+
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error("Response error:", {
-      url: error.config?.url,
-      status: error.response?.status,
+    const status = error.response?.status;
+    const requestUrl = error.config?.url;
+
+    console.error("❌ Response error:", {
+      url: requestUrl,
+      status,
       data: error.response?.data,
     });
-    if (
-      error.response?.status === 401 &&
-      error.config?.url !== "/auth/login" &&
-      !error.config?.url?.startsWith("/projects")
-    ) {
+
+    if (status === 401 && requestUrl !== "/auth/login") {
       localStorage.removeItem("token");
       window.location.href = "/login";
     }
+
     return Promise.reject(error);
   }
 );

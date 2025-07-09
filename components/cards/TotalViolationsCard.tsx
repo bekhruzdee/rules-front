@@ -1,8 +1,8 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertTriangle } from "lucide-react";
-import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 
 export default function TotalViolationsCard() {
@@ -13,8 +13,8 @@ export default function TotalViolationsCard() {
       try {
         const token = localStorage.getItem("token");
 
-        if (token === "demo-token") {
-          setTotalViolations(3); 
+        if (!token) {
+          console.warn("Token not found. Cannot fetch violations.");
           return;
         }
 
@@ -27,6 +27,7 @@ export default function TotalViolationsCard() {
         setTotalViolations(res.data.total);
       } catch (error) {
         console.error("Failed to fetch violations count:", error);
+        setTotalViolations(0); // fallback for UI
       }
     };
 

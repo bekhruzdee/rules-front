@@ -57,115 +57,14 @@ export default function ViolationsPage() {
   useEffect(() => {
     const fetchViolations = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (token === "demo-token") {
-          const mockViolations: Violation[] = [
-            {
-              id: 1,
-              type: "Late Arrival",
-              description:
-                "Employee arrived 30 minutes late without prior notification",
-              points: 3,
-              salaryDeduction: 50,
-              createdAt: new Date().toISOString(),
-              user: {
-                id: 1,
-                username: "johndoe",
-                firstName: "John",
-                lastName: "Doe",
-              },
-            },
-            {
-              id: 2,
-              type: "Missed Deadline",
-              description:
-                "Failed to deliver project milestone on scheduled date",
-              points: 8,
-              salaryDeduction: 200,
-              createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-              user: {
-                id: 3,
-                username: "mikejohnson",
-                firstName: "Mike",
-                lastName: "Johnson",
-              },
-            },
-            {
-              id: 3,
-              type: "Policy Violation",
-              description: "Inappropriate use of company resources",
-              points: 12,
-              salaryDeduction: 500,
-              createdAt: new Date(Date.now() - 86400000 * 5).toISOString(),
-              user: {
-                id: 1,
-                username: "johndoe",
-                firstName: "John",
-                lastName: "Doe",
-              },
-            },
-          ];
-          setViolations(mockViolations);
-          setLoading(false);
-          return;
-        }
-
         const response = await api.get("/violations");
         setViolations(response.data);
       } catch (error) {
         console.error("Failed to fetch violations:", error);
-
-        const mockViolations: Violation[] = [
-          {
-            id: 1,
-            type: "Late Arrival",
-            description:
-              "Employee arrived 30 minutes late without prior notification",
-            points: 3,
-            salaryDeduction: 50,
-            createdAt: new Date().toISOString(),
-            user: {
-              id: 1,
-              username: "johndoe",
-              firstName: "John",
-              lastName: "Doe",
-            },
-          },
-          {
-            id: 2,
-            type: "Missed Deadline",
-            description:
-              "Failed to deliver project milestone on scheduled date",
-            points: 8,
-            salaryDeduction: 200,
-            createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-            user: {
-              id: 3,
-              username: "mikejohnson",
-              firstName: "Mike",
-              lastName: "Johnson",
-            },
-          },
-          {
-            id: 3,
-            type: "Policy Violation",
-            description: "Inappropriate use of company resources",
-            points: 12,
-            salaryDeduction: 500,
-            createdAt: new Date(Date.now() - 86400000 * 5).toISOString(),
-            user: {
-              id: 1,
-              username: "johndoe",
-              firstName: "John",
-              lastName: "Doe",
-            },
-          },
-        ];
-        setViolations(mockViolations);
         toast({
-          title: "Demo Mode",
-          description: "Using mock data - connect to your backend API",
-          variant: "default",
+          title: "Error",
+          description: "Failed to fetch violations from server.",
+          variant: "destructive",
         });
       } finally {
         setLoading(false);
@@ -300,9 +199,9 @@ export default function ViolationsPage() {
                         src={violation.user.avatar || "/placeholder.svg"}
                       />
                       <AvatarFallback>
-                        {violation.user.firstName?.[0]}
-                        {violation.user.lastName?.[0]} ||
-                        {violation.user.username[0].toUpperCase()}
+                        {violation.user.firstName?.[0] ||
+                          violation.user.username[0]}
+                        {violation.user.lastName?.[0] || ""}
                       </AvatarFallback>
                     </Avatar>
                     <div>
@@ -333,7 +232,6 @@ export default function ViolationsPage() {
                   <p className="text-sm text-muted-foreground">
                     {violation.description}
                   </p>
-
                   <div className="flex items-center justify-between pt-4 border-t">
                     <div className="flex items-center space-x-6">
                       <div className="flex items-center space-x-2">
@@ -351,7 +249,6 @@ export default function ViolationsPage() {
                         </div>
                       )}
                     </div>
-
                     <div className="flex space-x-2">
                       <Button variant="outline" size="sm">
                         Edit
